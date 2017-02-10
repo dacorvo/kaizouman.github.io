@@ -354,7 +354,8 @@ To summarize, when linking an executable against a static library, you need to s
 
 As specified in the [linker documentation](http://linux.die.net/man/1/ld), when the linker encounters an input shared library it processes all its `DT_NEEDED` entries as secondary dependencies:
 
-- if the linker output is a shared relocatable __ELF__ object (ie a shared library), it will add all `DT_NEEDED` entries from the input library as new `DT_NEEDED` entries in the output,
+- if the linker output is a shared relocatable __ELF__ object (ie a shared library), and the --copy-dt-needed-entries option is set (this is the legacy behavior) it will add all `DT_NEEDED` entries from the input library as new `DT_NEEDED` entries in the output,
+- if the linker output is a shared relocatable __ELF__ object (ie a shared library), and if the --no-copy-dt-needed-entries option is set (this is the new default behavior for binutils, following [a move initiated by major distros like Fedora](http://fedoraproject.org/wiki/UnderstandingDSOLinkChange) ) it will simply ignore all `DT_NEEDED` entries from the input library,
 - if the linker ouput is a non-shared, non-relocatable link (our case), it will automatically add the libraries listed in the `DT_NEEDED` of the input library on the link command line, producing an error if it can't locate them.
 
 So, let's see what happens when dealing with our two shared libraries.
