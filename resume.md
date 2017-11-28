@@ -26,29 +26,26 @@
 1. Python
 1. GNU Make
 1. git
-1. subversion
 1. Cross-compilation
 1. buildroot
 1. Yocto
-1. Curie
-1. IntelCE
-1. Raspberry Pi
 1. HTML5
 1. CSS3
 1. nodejs
-1. OIPF
-1. DLNA
 1. MPEG-DASH
 1. GStreamer
-1. WebKit
+1. WebKit/Blink
 1. Qt
 
 ------
 
 ### Experience
 
-__2015- now__: **Intel** - *Senior Embedded Software Engineer - Intel SDK for Wearables*
-  Although involved in almost every aspect of the platform, I am more specifically in charge of the build system and the Intel IQs, software modules aiming at demonstrating the capabilities of the SDK.
+__2017- now__: **Renault** - *Senior Software Engineer*
+  Software platform for Autonomous and Electric Vehicles.
+
+__2015-2017__: **Intel** - *Senior Embedded Software Engineer - Intel SDK for Wearables*
+  Although involved in almost every aspect of the platform, I was more specifically in charge of the build system and the applicative layer of the SDK.
 
 __2014-2015__:**Orange** - *Senior Software Engineer - TV products*
   Technical lead for the new Orange TV middleware, allowing the seamless integration of native and web applications around a communication bus using DBus and WebSockets and a Wayland/Open GL ES compositing engine. Also in charge of build-system and continuous integration.
