@@ -24,17 +24,13 @@
 1. C/C++
 1. Javascript
 1. Python
-1. GNU Make
 1. git
-1. Cross-compilation
-1. buildroot
 1. Yocto
+1. docker
 1. HTML5
-1. CSS3
 1. nodejs
-1. MPEG-DASH
+1. tensorflow
 1. GStreamer
-1. WebKit/Blink
 1. Qt
 
 ------
@@ -42,7 +38,7 @@
 ### Experience
 
 __2017- now__: **Renault** - *Senior Software Engineer*
-  Software platform for Autonomous and Electric Vehicles.
+  Software platform for Autonomous and Electric Vehicles. AUTOSAR Runtime for Adaptive Applications (Yocto, C++).
 
 __2015-2017__: **Intel** - *Senior Embedded Software Engineer - Intel SDK for Wearables*
   Although involved in almost every aspect of the platform, I was more specifically in charge of the build system and the applicative layer of the SDK.
