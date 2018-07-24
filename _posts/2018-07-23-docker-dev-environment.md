@@ -182,7 +182,3 @@ The only solution I came up with was to use the host network from docker, instea
 ~~~~
 $ docker run -it --net host -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} ubuntu:trusty
 ~~~~
-
-~~~~
-$ docker run -it -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} ubuntu:trusty
-~~~~
