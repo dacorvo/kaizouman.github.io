@@ -68,7 +68,7 @@ TODO
 
 In a first step, we stimulate the neuron model with a square input current.
 
-<img src="images/posts/simulating_spiking_1.png">
+![Neuron response with square input current](/images/posts/simulating_spiking_1.png)
 
 The neuron spikes at regular intervals. After each spike, the neuron membrane goes to its resting potential
 before starting to increase again.
@@ -105,7 +105,7 @@ TODO
 
 The resulting membrane potential is displayed below:
 
-<img src="images/posts/simulating_spiking_2.png">
+![Neuron response with synaptic input current](/images/posts/simulating_spiking_2.png)
 
 The neuron exhibits a similar behavior, but with a less smooth response.
 
@@ -121,7 +121,7 @@ $$d[p<0.2] = 2.0, d[p >=0.2] = 8.0$$
 
 Instead of displaying the membrane potentials, we just plot the neuron spikes for inhibitory (blue) and excitatory (yellow) neurons:
 
-<img src="images/posts/simulating_spiking_3.png">
+![Inhibitory and Excitatory spikes](/images/posts/simulating_spiking_3.png)
 
 ## Step 4: Simulate 1000 neurons with recurrent connections
 
@@ -139,4 +139,4 @@ $E(j)$ is set to $-85$ for inhibitory neurons, $0$ otherwise.
 
 We again plot the neuron spikes for inhibitory (blue) and excitatory (yellow) neurons:
 
-<img src="images/posts/simulating_spiking_4.png">
+![Inhibitory and Excitatory spikes with recurrent connections](/images/posts/simulating_spiking_4.png)
