@@ -1,0 +1,47 @@
+---
+layout: post
+title: 'Simulating spiking neurons with Tensorflow'
+author: 'David Corvoysier'
+date: '2018-24-01 10:38:00'
+categories:
+- Development
+tags:
+- tensorflow
+- machine learning
+type: post
+---
+Spiking Neural Networks are the next generation of machine learning, according to the litterature.
+
+After the feed-forward perceptrons of the last century and the bi-directional deep networks trained
+using gradient descent of today, this 3rd generation of neural networks uses biologically-realistic
+models of neurons to carry out computation.
+
+A spiking neural network (SNN) operates using spikes, which are discrete events that take place at
+points in time, rather than continuous values. The occurrence of a spike is determined by differential
+equations that represent the membrane potential of the neuron.
+Essentially, once a neuron reaches a certain potential, it spikes, and the potential of that neuron is reset. 
+
+In this article, I will detail how this kind of network can be modelled using [Tensorflow](https://www.tensorflow.org/).
+
+<!--more-->
+
+You can find a jupyter notebook corresponding to this article in my 
+[tensorflow sandbox](https://github.com/kaizouman/tensorsandbox/blob/snn/snn/simple_spiking_model.ipynb).
+
+The article is based on an existing exercise using [Matlab](http://www.mjrlab.org/wp-content/uploads/2014/05/CSHA_matlab_2012.pdf).
+
+## Spiking neuron model
+
+The neuron model is based on ["Simple model on spiking neuron"](http://www.izhikevich.org/publications/spikes.htm), by Eugene M. Izhikevich.
+
+<img src="images/posts/izhik.gif">
+
+Electronic version of the figure and reproduction permissions are freely available at www.izhikevich.com
+
+The behaviour of the neuron is determined by its membrane potential v that increases over time when it is stimulated by an input current I.
+Whenever the membrane potential reaches the spiking threshold, the membrane potential is reset.
+
+The membrane potential increase is mitigated by an adversary recovery effect defined by the u variable.
+
+
+
