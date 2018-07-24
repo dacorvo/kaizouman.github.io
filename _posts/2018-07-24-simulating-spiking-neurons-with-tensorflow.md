@@ -36,7 +36,7 @@ The article is based on an existing exercise using [Matlab](http://www.mjrlab.or
 
 The neuron model is based on ["Simple model on spiking neuron"](http://www.izhikevich.org/publications/spikes.htm), by Eugene M. Izhikevich.
 
-![Simple model on spiking neuron](/images/posts/izhik.gif)
+<img src="/images/posts/izhik.gif" alt="Simple model on spiking neuron" width="100%"/>
 
 Electronic version of the figure and reproduction permissions are freely available at www.izhikevich.com
 
