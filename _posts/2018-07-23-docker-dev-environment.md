@@ -52,14 +52,41 @@ $ docker run -it -v $(pwd):/notebooks -p 8888:8888 tensorflow/tensorflow
 This will launch the jupyter server, allowing me to edit the notebooks under my local directory, and having
 the changes reflected directly in my source directory on the host, and not in the container.
 
-Another example where I map a Yocto tree into an image where I have all Yocto prerequisites, and where an empty /src directory exists:
+Another example where I map a Yocto tree into an image where I have all Yocto prerequisites, and where an empty /yocto directory exists:
+
+Dockerfile:
+~~~~
+FROM ubuntu:trusty
+# This will prevent some errors on the console when installing packages
+ARG DEBIAN_FRONTEND=noninteractive
+# Jethro build requirements from:
+#  http://www.yoctoproject.org/docs/2.0/ref-manual/ref-manual.html#ubuntu-packages
+RUN apt-get --quiet update --yes && apt-get --quiet install --yes \
+        gawk \
+        wget \
+        git-core \
+        diffstat \
+        unzip \
+        texinfo \
+        gcc-multilib \
+        build-essential \
+        chrpath \
+        socat \
+        libsdl1.2-dev \
+        xterm \
+        && rm -rf /var/lib/apt/lists/*
+
+# Start at the mountpoint
+WORKDIR /yocto
+# Always source Yocto script when launching a container
+CMD  ["/bin/bash", "-c", "source poky/oe-init-build-env"]
+~~~~
 
 ~~~~
-$ docker run -it $(pwd):/src kaizou/yocto
+$ docker run -it $(pwd):/yocto kaizou/yocto
 ~~~~
 
-Once the container has been launched, I can cd to the /src directory, source the Yocto environment script and
-start issueing bitbake commands.
+Once the container has been launched, I just have to issue bitbake commands, since the Yocto environment script is launched automatically.
 
 ## Avoiding having files owned by root in your development tree
 
@@ -117,4 +144,45 @@ You can then instantiate a container, passing the current user id on the command
 
 ~~~~
 $ docker run -it -v $(pwd):/src -e USER_ID=`id -u` kaizou/myimage
+~~~~
+
+## A few words about proxies
+
+In corporate environments, you are often behind a proxy. Docker works behind proxies, but you often need
+your guest inside docker to use proxies too.
+
+Below a list of configurations I have experienced:
+
+### Building an image
+
+If your Dockerfile contains commands that need to get access to the outside world, you need to specify the proxy
+environments variables as build arguments:
+
+~~~~
+$ docker build --build-arg http_proxy=${http_proxy} --build-arg https_proxy=${https_proxy} .
+~~~~
+
+### Running a container behind a global proxy
+
+Just share the host proxy environment variables with your guest (no specific configuration on the guest required, most of the time):
+
+~~~~
+$ docker run -it -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} ubuntu:trusty
+~~~~
+
+### Running a container behind a local proxy (tricky)
+
+This is a rare configuration, but since I was unlucky enough to experience it ...
+Imagine that you have on your host a local http proxy that acts as an authentication agent, and that this proxy
+is bound to localhost, and not your real IP (ie http_proxy=http://localhost:3128 for instance).
+In that case, if you just export the proxy variable to your guest, it will fail.
+
+The only solution I came up with was to use the host network from docker, instead of using NAT:
+
+~~~~
+$ docker run -it --net host -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} ubuntu:trusty
+~~~~
+
+~~~~
+$ docker run -it -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} ubuntu:trusty
 ~~~~
