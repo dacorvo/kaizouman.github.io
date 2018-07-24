@@ -60,32 +60,32 @@ $$u += du.dt$$
     
 As stated in the model, the $0.04$, $5$ and $140$ values have been defined so that $v$ is in $mV$, $I$ is in $A$ and $t$ in $ms$.
 
-The corresponding Tensorflow code looks like this:
+The corresponding Tensorflow code looks like this (see the [jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/snn/snn/simple_spiking_model.ipynb) for details):
 
 ~~~~python
-        # Evaluate membrane potential increment for the considered time interval
-        # dv = 0 if the neuron fired, dv = 0.04v*v + 5v + 140 + I -u otherwise
-        dv_op = tf.where(has_fired_op,
-                         tf.zeros(self.v.shape),
-                         tf.subtract(tf.add_n([tf.multiply(tf.square(v_reset_op), 0.04),
-                                               tf.multiply(v_reset_op, 5.0),
-                                               tf.constant(140.0, shape=[self.n]),
-                                               i_op]),
-                                     self.u))
-            
-        # Evaluate membrane recovery decrement for the considered time interval
-        # du = 0 if the neuron fired, du = a*(b*v -u) otherwise
-        du_op = tf.where(has_fired_op,
-                         tf.zeros([self.n]),
-                         tf.multiply(self.A, tf.subtract(tf.multiply(self.B, v_reset_op), u_reset_op)))
+# Evaluate membrane potential increment for the considered time interval
+# dv = 0 if the neuron fired, dv = 0.04v*v + 5v + 140 + I -u otherwise
+dv_op = tf.where(has_fired_op,
+                 tf.zeros(self.v.shape),
+                 tf.subtract(tf.add_n([tf.multiply(tf.square(v_reset_op), 0.04),
+                                       tf.multiply(v_reset_op, 5.0),
+                                       tf.constant(140.0, shape=[self.n]),
+                                       i_op]),
+                             self.u))
+                        
+# Evaluate membrane recovery decrement for the considered time interval
+# du = 0 if the neuron fired, du = a*(b*v -u) otherwise
+du_op = tf.where(has_fired_op,
+                 tf.zeros([self.n]),
+                 tf.multiply(self.A, tf.subtract(tf.multiply(self.B, v_reset_op), u_reset_op)))
     
-        # Increment membrane potential, and clamp it to the spiking threshold
-        # v += dv * dt
-        v_op = tf.assign(self.v, tf.minimum(tf.constant(self.SPIKING_THRESHOLD, shape=[self.n]),
+# Increment membrane potential, and clamp it to the spiking threshold
+# v += dv * dt
+v_op = tf.assign(self.v, tf.minimum(tf.constant(self.SPIKING_THRESHOLD, shape=[self.n]),
                                                  tf.add(v_reset_op, tf.multiply(dv_op, self.dt))))
 
-        # Decrease membrane recovery
-        u_op = tf.assign(self.u, tf.add(u_reset_op, tf.multiply(du_op, self.dt)))
+# Decrease membrane recovery
+u_op = tf.assign(self.u, tf.add(u_reset_op, tf.multiply(du_op, self.dt)))
 ~~~~
 
 ## Simulate a single neuron with injected current
