@@ -121,7 +121,7 @@ The complete synaptic current formula at each timestep is:
 
 $$Isyn = \sum_{j}^{}w_{in}(j)g_{in}(j)(E_{in}(j) -v(t)) = \sum_{j}^{}w_{in}(j)g_{in}(j)E_{in}(j) - (\sum_{j}w_{in}(j)g_{in}(j)).v(t)$$
 
-The corresponding Tensorflow code looks like this:
+The corresponding Tensorflow code looks like this (see the [jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/snn/snn/simple_spiking_model.ipynb) for details):
 
 ```python
 # First, update synaptic conductance dynamics:
@@ -167,6 +167,30 @@ A neuron i is sparsely (with probability $prc = 0.1$) connected to a neuron j.
 Thus neuron i receives an additional current $Isyn(i)$ of the same form as the synaptic input:
 
 $$Isyn(i) = \sum_{j}w(i,j)g(j)(E(j) -v(t))$$
+
+The corresponding Tensorflow code looks like this (see the [jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/snn/snn/simple_spiking_model.ipynb) for details):
+
+```python
+# First, update recurrent conductance dynamics:
+# - increment by one the current factor of synapses that fired
+# - decrease by tau the conductance dynamics in any case
+g_update_op = tf.where(has_fired_op,
+                       tf.add(self.g, tf.ones(shape=self.g.shape)),
+                       tf.subtract(self.g, tf.multiply(self.dt, tf.divide(self.g, self.tau))))
+        
+# Update the g variable
+g_op = tf.assign(self.g, g_update_op)
+
+# We can now evaluate the recurrent conductance
+# I_rec = Σ wjgj(Ej -v(t))
+i_rec_op = tf.einsum('ij,j->i', tf.constant(self.W), tf.multiply(g_op, tf.subtract(tf.constant(self.E), v_op)))
+
+# Get the synaptic input currents from parent
+i_in_op = super(SimpleSynapticRecurrentNeurons, self).get_input_ops(has_fired_op, v_op)
+        
+# The actual current is the sum of both currents
+i_op = i_in_op + i_rec_op
+```
 
 Weights $w$ are Gamma distributed (scale $0.003$, shape $2$).
 
