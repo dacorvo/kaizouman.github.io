@@ -2,7 +2,7 @@
 layout: post
 title: 'Simulating spiking neurons with Tensorflow'
 author: 'David Corvoysier'
-date: '2018-24-01 10:38:00'
+date: '2018-07-24 10:38:00'
 categories:
 - Development
 tags:
