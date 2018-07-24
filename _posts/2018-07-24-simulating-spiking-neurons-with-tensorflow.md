@@ -8,6 +8,8 @@ categories:
 tags:
 - tensorflow
 - machine learning
+- spiking neural nets
+- snn
 type: post
 ---
 Spiking Neural Networks are the next generation of machine learning, according to the litterature.
