@@ -62,7 +62,7 @@ As stated in the model, the $0.04$, $5$ and $140$ values have been defined so th
 
 The corresponding Tensorflow code looks like this (see the [jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/snn/snn/simple_spiking_model.ipynb) for details):
 
-~~~~python
+```python
 # Evaluate membrane potential increment for the considered time interval
 # dv = 0 if the neuron fired, dv = 0.04v*v + 5v + 140 + I -u otherwise
 dv_op = tf.where(has_fired_op,
@@ -86,7 +86,7 @@ v_op = tf.assign(self.v, tf.minimum(tf.constant(self.SPIKING_THRESHOLD, shape=[s
 
 # Decrease membrane recovery
 u_op = tf.assign(self.u, tf.add(u_reset_op, tf.multiply(du_op, self.dt)))
-~~~~
+```
 
 ## Simulate a single neuron with injected current
 
@@ -123,9 +123,22 @@ $$Isyn = \sum_{j}^{}w_{in}(j)g_{in}(j)(E_{in}(j) -v(t)) = \sum_{j}^{}w_{in}(j)g_
 
 The corresponding Tensorflow code looks like this:
 
-~~~~
-TODO
-~~~~
+```python
+# First, update synaptic conductance dynamics:
+# - increment by one the current factor of synapses that fired
+# - decrease by tau the conductance dynamics in any case
+g_in_update_op = tf.where(self.syn_has_spiked,
+                          tf.add(self.g_in, tf.ones(shape=self.g_in.shape)),
+                          tf.subtract(self.g_in, tf.multiply(self.dt,tf.divide(self.g_in, self.tau))))
+
+# Update the g_in variable
+g_in_op = tf.assign(self.g_in, g_in_update_op)
+
+# We can now evaluate the synaptic input currents
+# Isyn = Σ w_in(j)g_in(j)E_in(j) - (Σ w_in(j)g_in(j)).v(t)
+i_op = tf.subtract(tf.einsum('nm,m->n', tf.constant(self.W_in), tf.multiply(g_in_op, tf.constant(self.E_in))),
+                   tf.multiply(tf.einsum('nm,m->n', tf.constant(self.W_in), g_in_op), v_op))
+```
 
 The resulting membrane potential is displayed below:
 
