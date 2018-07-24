@@ -45,9 +45,9 @@ Then, you can just instantiate your container, mapping your source tree to a con
 In the example below, I have for instance mapped a local directory containing jupyter notebooks to the tensorflow
 base image root jupyter directory:
 
-~~~~
+```shell
 $ docker run -it -v $(pwd):/notebooks -p 8888:8888 tensorflow/tensorflow
-~~~~
+```
 
 This will launch the jupyter server, allowing me to edit the notebooks under my local directory, and having
 the changes reflected directly in my source directory on the host, and not in the container.
@@ -55,7 +55,7 @@ the changes reflected directly in my source directory on the host, and not in th
 Another example where I map a Yocto tree into an image where I have all Yocto prerequisites, and where an empty /yocto directory exists:
 
 Dockerfile:
-~~~~
+```shell
 FROM ubuntu:trusty
 # This will prevent some errors on the console when installing packages
 ARG DEBIAN_FRONTEND=noninteractive
@@ -80,11 +80,11 @@ RUN apt-get --quiet update --yes && apt-get --quiet install --yes \
 WORKDIR /yocto
 # Always source Yocto script when launching a container
 CMD  ["/bin/bash", "-c", "source poky/oe-init-build-env"]
-~~~~
+```
 
-~~~~
+```shell
 $ docker run -it $(pwd):/yocto kaizou/yocto
-~~~~
+```
 
 Once the container has been launched, I just have to issue bitbake commands, since the Yocto environment script is launched automatically.
 
@@ -100,7 +100,7 @@ Below are the corresponding Dockerfile and init script.
 
 Dockerfile:
 
-~~~~
+```shell
 from ubuntu
 # As root user, install gosu and set up an entrypoint to be able to change the
 # default user UID when entering the container
@@ -123,28 +123,28 @@ USER $UNAME
 # Switch back to root user to execute the entrypoint script, as we may need
 # to change the UID of the default user
 USER root
-~~~~
+```
 open_session_with_host_uid.sh:
-~~~~
+```shell
 #!/bin/sh
 if [ -n "${USER_ID}" ]; then
     usermod -u ${USER_ID} devel;
 fi
 ARGS=${@:-/bin/bash}
 /usr/local/bin/gosu renault "${ARGS}"
-~~~~
+```
 
 Just build the image:
 
-~~~~
+```shell
 $ docker build . -t kaizou/myimage
-~~~~
+```
 
 You can then instantiate a container, passing the current user id on the command line:
 
-~~~~
+```shell
 $ docker run -it -v $(pwd):/src -e USER_ID=`id -u` kaizou/myimage
-~~~~
+```
 
 ## A few words about proxies
 
@@ -158,17 +158,17 @@ Below a list of configurations I have experienced:
 If your Dockerfile contains commands that need to get access to the outside world, you need to specify the proxy
 environments variables as build arguments:
 
-~~~~
+```shell
 $ docker build --build-arg http_proxy=${http_proxy} --build-arg https_proxy=${https_proxy} .
-~~~~
+```
 
 ### Running a container behind a global proxy
 
 Just share the host proxy environment variables with your guest (no specific configuration on the guest required, most of the time):
 
-~~~~
+```shell
 $ docker run -it -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} ubuntu:trusty
-~~~~
+```
 
 ### Running a container behind a local proxy (tricky)
 
@@ -179,6 +179,6 @@ In that case, if you just export the proxy variable to your guest, it will fail.
 
 The only solution I came up with was to use the host network from docker, instead of using NAT:
 
-~~~~
+```shell
 $ docker run -it --net host -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} ubuntu:trusty
-~~~~
+```
