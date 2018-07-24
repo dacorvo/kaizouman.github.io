@@ -92,6 +92,7 @@ u_op = tf.assign(self.u, tf.add(u_reset_op, tf.multiply(du_op, self.dt)))
 
 In a first step, we stimulate the neuron model with a square input current.
 
+![square input current](/images/posts/simulating_spiking_1_0.png)
 ![Neuron response with square input current](/images/posts/simulating_spiking_1.png)
 
 The neuron spikes at regular intervals. After each spike, the neuron membrane goes to its resting potential
@@ -142,6 +143,7 @@ i_op = tf.subtract(tf.einsum('nm,m->n', tf.constant(self.W_in), tf.multiply(g_in
 
 The resulting membrane potential is displayed below:
 
+![synaptic input current](/images/posts/simulating_spiking_2_0.png)
 ![Neuron response with synaptic input current](/images/posts/simulating_spiking_2.png)
 
 The neuron exhibits a similar behavior, but with a less smooth response.
