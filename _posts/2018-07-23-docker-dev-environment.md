@@ -33,8 +33,8 @@ Note: For python development, virtualenv are also a good answer, but for node I 
 
 Anyway, since a couple of years, I have been using docker for these sandboxes, for two reasons:
 
-- they are incredibly easy to share and replicate, allowing the whole developemnt team to have the exact same environment,
-- there is a lot of base images that you can use.
+- they are incredibly easy to share and replicate, allowing the whole development team to have the exact same environment,
+- there are a lot of base images that you can use.
 
 ## Setting up a build container
 
