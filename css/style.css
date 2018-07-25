@@ -212,6 +212,7 @@ header[role=banner] fieldset{
     }
     #first-col {
         display: table-cell;
+	width: 1200px;
     }
     #first-col article {
         margin: 0px auto;
@@ -219,7 +220,7 @@ header[role=banner] fieldset{
     }
     #second-col {
         display: table-cell;
-        width: 800px;
+        width: 400px;
     }
     #second-col .tuple {
         border-spacing: 1em 0.5em;
