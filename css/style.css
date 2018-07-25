@@ -207,7 +207,7 @@ header[role=banner] fieldset{
 
 @media only screen and (min-width: 1400px) {
     #content {
-        width: 1600px;
+        width: 1400px;
         border-spacing: 1em 0.7em;
     }
     #first-col {
