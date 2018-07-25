@@ -140,17 +140,29 @@ g_in_op = tf.assign(self.g_in, g_in_update_op)
 i_op = tf.subtract(tf.einsum('nm,m->n', tf.constant(self.W_in), tf.multiply(g_in_op, tf.constant(self.E_in))),
                    tf.multiply(tf.einsum('nm,m->n', tf.constant(self.W_in), g_in_op), v_op))
 ```
+We stimulate a neuron with $100$ synapses firing at $2 Hz$ between $200$ and $700 ms$.
+
+Every millisecond, there are $0.001 * 2 * 100 = 0.2$ synapse spikes as an average.
+
+In other words, a synapse spike occurs every $5 ms$ as an average.
 
 The resulting membrane potential is displayed below:
 
 ![synaptic input current](/images/posts/simulating_spiking_2_0.png)
 ![Neuron response with synaptic input current](/images/posts/simulating_spiking_2.png)
 
-The neuron exhibits a similar behavior, but with a less smooth response.
+The synaptic input current oscillates around a mean value of approximately $10 mA$.
+
+Due to the increased input current, the neuron spikes faster than in the previous stimulation.
 
 ## Step 3: Simulate 1000 neurons with synaptic input
 
-Each neuron is either inhibitory (a=0.1, d=2.0) or excitatory (a=0.02, d=8.0), with a proportion of 20% inhibitory.
+Each neuron is either:
+
+- an inhibitory fast-spiking neuron $(a=0.1, d=2.0)$,
+- or an excitatory regular spiking neuron $(a=0.02, d=8.0)$.
+
+with a proportion of $20$ % inhibitory.
 
 We therefore define a random uniform vector p on $[0,1]$, and condition the a and d vectors of our neuron population on p.
 
@@ -158,9 +170,15 @@ $$a[p<0.2] = 0.1, a[p >=0.2] = 0.02$$
 
 $$d[p<0.2] = 2.0, d[p >=0.2] = 8.0$$
 
+Each neuron is randomly connected with $10$ % of the input synapses, and thus receives an input synapse spike every $50 ms$ as an average.
+
 Instead of displaying the membrane potentials, we just plot the neuron spikes for inhibitory (blue) and excitatory (yellow) neurons:
 
 ![Inhibitory and Excitatory spikes](/images/posts/simulating_spiking_3.png)
+
+The neurons spike in 'stripes' at somehow regular intervals, with a bit of dispersion.
+
+The neuron dynamics seem to act as a regulator to the synaptic 'noise'.
 
 ## Step 4: Simulate 1000 neurons with recurrent connections
 
@@ -203,3 +221,5 @@ $E(j)$ is set to $-85$ for inhibitory neurons, $0$ otherwise.
 We again plot the neuron spikes for inhibitory (blue) and excitatory (yellow) neurons:
 
 ![Inhibitory and Excitatory spikes with recurrent connections](/images/posts/simulating_spiking_4.png)
+
+The addition of recurrent connections has drastically reduced the dispersion of the neuron spikes.
