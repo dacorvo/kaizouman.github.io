@@ -187,7 +187,7 @@ We perform a simulation by evaluating the contribution of each synapse to the in
 At every time step, we draw a single sample $r$ from a uniform distribution in the $[0,1]$ interval, and if it is lower than
 the probability of a spike over the time interval (ie $r < \lambda.dt$) then a spike occurred.
 
-Note that this assumes that the chosen time interval is lower than the minimum synapse spiking frequency.
+Note that this assumes that the chosen time interval is lower than the minimum synapse spiking interval.
 
 <img alt="Synapse spikes" src="/images/posts/lif_3.png">
 <img alt="Synaptic input current" src="/images/posts/lif_3_1.png">
