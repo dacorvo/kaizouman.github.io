@@ -13,7 +13,7 @@ tags:
 - lif
 type: post
 ---
-Spiking Neural Networks (SNN) are the next generation of machine learning, that operates using spikes, 
+Spiking Neural Networks (SNN) are the next generation of neural networks, that operate using spikes, 
 which are discrete events that take place at points in time, rather than continuous values.
 
 Essentially, once a stimulated neuron reaches a certain potential, it spikes, and the potential of that neuron is reset. 
