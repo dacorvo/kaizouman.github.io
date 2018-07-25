@@ -28,7 +28,7 @@ In this article, I will detail how this kind of network can be modelled using [T
 <!--more-->
 
 You can find a jupyter notebook corresponding to this article in my 
-[tensorflow sandbox](https://github.com/kaizouman/tensorsandbox/blob/snn/snn/simple_spiking_model.ipynb).
+[tensorflow sandbox](https://github.com/kaizouman/tensorsandbox/blob/master/snn/simple_spiking_model.ipynb).
 
 The article is based on an existing exercise using [Matlab](http://www.mjrlab.org/wp-content/uploads/2014/05/CSHA_matlab_2012.pdf).
 
@@ -60,7 +60,7 @@ $$u += du.dt$$
     
 As stated in the model, the $0.04$, $5$ and $140$ values have been defined so that $v$ is in $mV$, $I$ is in $A$ and $t$ in $ms$.
 
-The corresponding Tensorflow code looks like this (see the [jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/snn/snn/simple_spiking_model.ipynb) for details):
+The corresponding Tensorflow code looks like this (see the [jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/master/snn/simple_spiking_model.ipynb) for details):
 
 ```python
 # Evaluate membrane potential increment for the considered time interval
@@ -122,7 +122,7 @@ The complete synaptic current formula at each timestep is:
 
 $$Isyn = \sum_{j}^{}w_{in}(j)g_{in}(j)(E_{in}(j) -v(t)) = \sum_{j}^{}w_{in}(j)g_{in}(j)E_{in}(j) - (\sum_{j}w_{in}(j)g_{in}(j)).v(t)$$
 
-The corresponding Tensorflow code looks like this (see the [jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/snn/snn/simple_spiking_model.ipynb) for details):
+The corresponding Tensorflow code looks like this (see the [jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/master/snn/simple_spiking_model.ipynb) for details):
 
 ```python
 # First, update synaptic conductance dynamics:
@@ -170,7 +170,7 @@ Thus neuron i receives an additional current $Isyn(i)$ of the same form as the s
 
 $$Isyn(i) = \sum_{j}w(i,j)g(j)(E(j) -v(t))$$
 
-The corresponding Tensorflow code looks like this (see the [jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/snn/snn/simple_spiking_model.ipynb) for details):
+The corresponding Tensorflow code looks like this (see the [jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/master/snn/simple_spiking_model.ipynb) for details):
 
 ```python
 # First, update recurrent conductance dynamics:
