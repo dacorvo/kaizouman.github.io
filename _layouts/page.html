@@ -6,6 +6,15 @@ layout: default
 <header class='title'>
   <h1><a href="{{ page.url }}" rel="bookmark">{{ page.title }}</a></h1>
 </header>
+<script type="text/javascript"
+    src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    processEscapes: true
+  }
+});
+</script>
 {{ content }}
 </article>
 </div>
