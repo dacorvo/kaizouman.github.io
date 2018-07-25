@@ -216,7 +216,7 @@ header[role=banner] fieldset{
     }
     #first-col article {
         margin: 0px auto;
-        width: 45em;
+        width: 55em;
     }
     #second-col {
         display: table-cell;
@@ -227,12 +227,12 @@ header[role=banner] fieldset{
         table-layout: fixed;
     }
     #second-col article {
-        display: table-cell;
+        margin-bottom: 1em;
     }
 }
 
 article {
-	max-width: 45em;
+    max-width: 55em;
     padding: 1em;
     border: 1px solid #DFDFDF;
 }
