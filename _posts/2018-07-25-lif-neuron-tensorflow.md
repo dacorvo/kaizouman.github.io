@@ -31,7 +31,7 @@ The leaky integrate-and-fire (LIF) neuron is probably one of the simplest spikin
 
 The basic circuit of an integrate-and-fire model consists of a capacitor C in parallel with a resistor R driven by a current I(t):
 
-<img alt="Leaky Integrate and Fire model" src="/images/posts/gerstner.gif">
+![Leaky Integrate and Fire model](/images/posts/gerstner.gif)
 
 The driving current can be split into two components, $I(t) = IR + IC$. 
 
