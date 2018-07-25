@@ -131,7 +131,7 @@ The first current step is not sufficient to trigger a spike. The two other trigg
 We now stimulate the neuron with a varying current corresponding to a normal distribution of mean 1.5 mA and standard deviation 1.0 mA.
 
 <img alt="Varying input current" src="/images/posts/lif_2.png">
-<img alt="LIF neuron response" src="/images/posts/lif_2_1.png">
+<img alt="LIF neuron response" src="/images/posts/lif_2_2.png">
 
 The input current triggers spike at regular intervals: the neuron mostly saturates, each spike being separated by the resting period.
 
