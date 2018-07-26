@@ -48,8 +48,8 @@ $$t=\frac{\tau_{m}\tau_{s}}{\tau_{m}-\tau_{s}}ln(\frac{\tau_{m}}{\tau_{s}})$$
 
 In this simplified version of the neuron, the synaptic weights $w_{j}$ remain constant.
 
-The code for the main graph operations are described below (please refer to my 
-[jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/master/snn/STDP_masquelier_2008.ipynb) for details:
+The main graph operations are described below (please refer to my 
+[jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/master/snn/STDP_masquelier_2008.ipynb) for details):
 
 ```python
     # Excitatory post-synaptic potential (EPSP)
@@ -180,7 +180,7 @@ $$\Delta{w} = -a^{-}exp(-\frac{\Delta{t}}{\tau^{-}})$$
 
 As in the original paper, we only apply **LTP**, resp. **LTD** to the first spike before, resp. after a neuron spike on each synapse.
 
-The code for the **STDP** graph operations are described below (please refer to my 
+The main **STDP** graph operations are described below (please refer to my 
 [jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/master/snn/STDP_masquelier_2008.ipynb) for details:
 
 ```python
