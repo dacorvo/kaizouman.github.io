@@ -87,3 +87,4 @@ Once done, you can destroy the bridge:
 ip link set dev br0 down
 ip link del br0
 ```
+And voila ...
