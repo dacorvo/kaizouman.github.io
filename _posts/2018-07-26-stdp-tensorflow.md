@@ -22,10 +22,12 @@ Because of their very nature, SNNs cannot be trained like 2nd generation neural 
 Spike Timing Dependent Plasticity ([STDP](https://en.wikipedia.org/wiki/Spike-timing-dependent_plasticity)) is a biological process that
 inspired an unsupervised training method for SNNs.  
 
-In this article, I will try to reproduce the STDP experiments described in 
-[Masquelier & Thorpe (2008)](https://www.semanticscholar.org/paper/Spike-Timing-Dependent-Plasticity-Finds-the-Start-Masquelier-Guyonneau/432b5bfa6fc260289fef45544a43ebcd8892915e) using [Tensorflow](https://www.tensorflow.org/) instead of Matlab.
+In this article, I will provide an illustration of how STDP can be used to teach a single neuron to identify a repeating pattern in a continuous stream of input spikes. 
 
 <!--more-->
+
+For this, I will reproduce the STDP experiments described in 
+[Masquelier & Thorpe (2008)](https://www.semanticscholar.org/paper/Spike-Timing-Dependent-Plasticity-Finds-the-Start-Masquelier-Guyonneau/432b5bfa6fc260289fef45544a43ebcd8892915e) using [Tensorflow](https://www.tensorflow.org/) instead of Matlab.
 
 ## LIF neuron model
 
