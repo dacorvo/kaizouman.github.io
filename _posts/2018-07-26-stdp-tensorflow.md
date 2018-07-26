@@ -144,8 +144,8 @@ We test our spike trains generator and draw the corresponding spikes.
 Both sets of spike trains use varying rates in the $[0, 90]\,Hz$ interval.
 The second set imposes $\Delta_{max}=50\,ms$.
 
-![LIF Neuron response](/images/posts/masquelier_2.png)
-![LIF Neuron response](/images/posts/masquelier_2_1.png)
+![Varying spike trains](/images/posts/masquelier_2.png)
+![Varying spike trains with delta_max](/images/posts/masquelier_2_1.png)
 
 We note the increased mean rate of the second set of spike trains, due to the minimum $20\,Hz$ rate we impose (ie the maximum interval we allow between two spikes is $50\,ms$).
 
@@ -157,7 +157,7 @@ The synaptic efficacy weights are arbitrarily set to $0.475$ and remain constant
 
 We draw the neuron membrane response to the $500$ random synaptic spike trains.
 
-![LIF Neuron response](/images/posts/masquelier_3.png)
+![Varying spike trains](/images/posts/masquelier_3.png)
 ![LIF Neuron response](/images/posts/masquelier_3_1.png)
 
 We can see that the neuron mostly saturates and continuously generates spikes.
@@ -226,7 +226,7 @@ The code for the **STDP** graph operations are described below (please refer to 
 
 We apply the same predefined spike train to an **STDP** capable LIFNeuron with a limited number of synapses, and draw the resulting rewards (*green*) and penalties (*red*).
 
-![LIF Neuron response](/images/posts/masquelier_4.png)
+![Synapse spikes and STDP](/images/posts/masquelier_4.png)
 ![LIF Neuron response](/images/posts/masquelier_4_1.png)
 
 On the graph above, we verify that the rewards (*green* dots) are assigned only when the neuron spikes, and that they are assigned to synapses where a spike occured before the neuron spike (big *blue* dots).
@@ -236,3 +236,28 @@ Note: a reward is assigned event if the synapse spike is not synchronous with th
 We also verify that a penaly (*red* dot) is inflicted on every synapse where a first spike occurs after a neuron spike.
 
 Note: these penalties may later be counter-balanced by a reward if a neuron spike closely follows.
+
+## Stimulate an STDP LIF Neuron with random spike trains
+
+The goal here is to check the effects of the **STDP** learning on the neuron behaviour when it is stimulated with our random spike trains.
+
+We test the neuron response with three set of spike trains, with a mean rate of $35$, $45$ and $55$ $Hz$ respectively.
+
+![LIF Neuron response 35Hz](/images/posts/masquelier_5.png)
+![Mean weights 35 Hz](/images/posts/masquelier_5_1.png)
+![LIF Neuron response 45Hz](/images/posts/masquelier_5_2.png)
+![Mean weights 45 Hz](/images/posts/masquelier_5_3.png)
+![LIF Neuron response 55Hz](/images/posts/masquelier_5_4.png)
+![Mean weights 55 Hz](/images/posts/masquelier_5_5.png)
+
+We see that the evolution of the synapse weights as a response to this steady stimulation is highly dependent of the mean input frequency.
+
+If the mean input frequency is too low, the neuron exhibits a low decrease of the synaptic efficacy weights, down to the point where the neuron is not able to fire anymore.
+
+If the mean input frequency is too high, the neuron exhibits in the contrary an increase of the synaptic efficacy weights, up to the point where it fires regardless of the input.
+
+Using the **STDP** values of the original paper, only the exact mean frequency of $45$ $Hz$ (the one also used in the paper) exhibits some kind of stability.
+
+As a conclusion, either our implementations differ, or the adverse effect of this particular **STDP** algorithm has been overlooked in the original paper, because as we will see later, the actual mean stimulation rate will be around $64$ $Hz$.
+
+
