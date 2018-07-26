@@ -66,7 +66,7 @@ The LIFNeuron object exposes the membrane potential Tensorflow 'operation' as a 
 
 The input current and considered time interval are passed at Tensorflow placeholders.
 
-The code for the main graph operations are described below (please refer to my 
+The main graph operations are described below (please refer to my 
 [jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/master/snn/leaky_integrate_fire.ipynb) for details:
 
 ```python
