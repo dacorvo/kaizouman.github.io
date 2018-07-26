@@ -148,3 +148,16 @@ The second set imposes $\Delta_{max}=50\,ms$.
 ![LIF Neuron response](/images/posts/masquelier_2_1.png)
 
 We note the increased mean rate of the second set of spike trains, due to the minimum $20\,Hz$ rate we impose (ie the maximum interval we allow between two spikes is $50\,ms$).
+
+## Stimulate a LIF Neuron with random spike trains
+
+We now feed the neuron with $500$ synapses that generate spikes at random interval with varying rates.
+
+The synaptic efficacy weights are arbitrarily set to $0.475$ and remain constant throughout the simulation.
+
+We draw the neuron membrane response to the $500$ random synaptic spike trains.
+
+![LIF Neuron response](/images/posts/masquelier_3.png)
+![LIF Neuron response](/images/posts/masquelier_3_1.png)
+
+We can see that the neuron mostly saturates and continuously generates spikes.
