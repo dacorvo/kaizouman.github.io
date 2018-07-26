@@ -13,7 +13,7 @@ tags:
 - stdp
 type: post
 ---
-Spiking neural networks([SNN](https://en.wikipedia.org/wiki/Spiking_neural_network)) are the 3rd generation of neural networks.
+Spiking neural networks ([SNN](https://en.wikipedia.org/wiki/Spiking_neural_network)) are the 3rd generation of neural networks.
 
 SNN do not react on each stimulus, but rather accumulate inputs until they reach a threshold potential and generate a 'spike'.
 
