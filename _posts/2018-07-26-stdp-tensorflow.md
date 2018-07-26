@@ -1,0 +1,133 @@
+---
+layout: post
+title: 'Identify Repeating Patterns using Spiking Neural Networks in Tensorflow'
+author: 'David Corvoysier'
+date: '2018-07-26 10:38:00'
+categories:
+- Development
+tags:
+- tensorflow
+- machine learning
+- spiking neural nets
+- snn
+- stdp
+type: post
+---
+Spiking neural networks([SNN](https://en.wikipedia.org/wiki/Spiking_neural_network)) are the 3rd generation of neural networks.
+
+SNN do not react on each stimulus, but rather accumulate inputs until they reach a threshold potential called a 'spike'.
+
+Because of their very nature, SNNs cannot be trained like 2nd generation neural networks using gradient descent.
+
+Spike Timing Dependent Plasticity ([STDP](https://en.wikipedia.org/wiki/Spike-timing-dependent_plasticity)) is a biological process that
+inspired an unsupervised training method for SNNs.  
+
+In this article, I will try to reproduce the STDP experiments described in 
+[Masquelier & Thorpe (2008)](https://www.semanticscholar.org/paper/Spike-Timing-Dependent-Plasticity-Finds-the-Start-Masquelier-Guyonneau/432b5bfa6fc260289fef45544a43ebcd8892915e) using [Tensorflow](https://www.tensorflow.org/) instead of Matlab.
+
+<!--more-->
+
+## LIF neuron model
+
+The LIF neuron model used in this experiment is based on Gerstner's [Spike Response Model](http://lcn.epfl.ch/~gerstner/SPNM/node26.html#SECTION02311000000000000000).
+
+At every time-step, the neuron membrane potential p is given by the formula:
+
+$$p=\eta(t-t_{i})\sum_{j|t_{j}>t_{i}}{}w_{j}\varepsilon(t-t_{j})$$
+
+where $\eta(t-t_{i})$ is the membrane response after a spike at time $t_{i}$:
+
+$$\eta(t-t_{i})=K_{1}exp(-\frac{t-t_{i}}{\tau_{m}})-K_{2}(exp(-\frac{t-t_{i}}{\tau_{m}})-exp(-\frac{t-t_{i}}{\tau_{s}}))$$
+
+and $\varepsilon(t)$ describes the Excitatory Post-Synaptic Potential of each synapse spike at time $t_{j}$:
+
+$$\varepsilon(t-t_{j})=K(exp(-\frac{t-t_{j}}{\tau_{m}})-exp(-\frac{t-t_{j}}{\tau_{s}}))$$
+
+Note that K has to be chosen so that the max of $\eta(t)$ is 1, knowing that $\eta(t)$ is maximum when:
+$$t=\frac{\tau_{m}\tau_{s}}{\tau_{m}-\tau_{s}}ln(\frac{\tau_{m}}{\tau_{s}})$$
+
+In this simplified version of the neuron, the synaptic weights $w_{j}$ remain constant.
+
+The code for the main graph operations are described below (please refer to my 
+[jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/master/snn/STDP_masquelier_2008.ipynb) for details:
+
+```python
+    # Excitatory post-synaptic potential (EPSP)
+    def epsilon_op(self):
+
+        # We only use the negative value of the relative spike times
+        spikes_t_op = tf.negative(self.t_spikes)
+
+        return self.K *(tf.exp(spikes_t_op/self.tau_m) - tf.exp(spikes_t_op/self.tau_s))
+    
+    # Membrane spike response
+    def eta_op(self):
+        
+        # We only use the negative value of the relative time
+        t_op = tf.negative(self.last_spike)
+        
+        # Evaluate the spiking positive pulse
+        pos_pulse_op = self.K1 * tf.exp(t_op/self.tau_m)
+        
+        # Evaluate the negative spike after-potential
+        neg_after_op = self.K2 * (tf.exp(t_op/self.tau_m) - tf.exp(t_op/self.tau_s))
+
+        # Evaluate the new post synaptic membrane potential
+        return self.T * (pos_pulse_op - neg_after_op)
+    
+    # Neuron behaviour during integrating phase (t_rest = 0)
+    def w_epsilons_op(self):
+        
+        # Evaluate synaptic EPSPs. We ignore synaptic spikes older than the last neuron spike
+        epsilons_op = tf.where(tf.logical_and(self.t_spikes >=0, self.t_spikes < self.last_spike - self.tau_rest),
+                               self.epsilon_op(),
+                               self.t_spikes*0.0)
+                          
+        # Agregate weighted incoming EPSPs 
+        return tf.reduce_sum(self.w * epsilons_op)  
+   ...
+   def default_op(self):
+        
+        # Update weights
+        w_op = self.default_w_op()
+        
+        # By default, the membrane potential is given by the sum of the eta kernel and the weighted epsilons
+        with tf.control_dependencies([w_op]):
+            return self.eta_op() + self.w_epsilons_op()
+        
+    def integrating_op(self):
+
+        # Evaluate the new membrane potential, integrating both synaptic input and spike dynamics
+        p_op = self.eta_op() + self.w_epsilons_op()
+
+        # We have a different behavior if we reached the threshold
+        return tf.cond(p_op > self.T,
+                       self.firing_op,
+                       self.default_op)
+    
+    def get_potential_op(self):
+        
+        # Update our internal memory of the synapse spikes (age older spikes, add new ones)
+        update_spikes_op = self.update_spikes_times()
+        
+        # Increase the relative time of the last spike by the time elapsed
+        last_spike_age_op = self.last_spike.assign_add(self.dt)
+        
+        # Update the internal state of the neuron and evaluate membrane potential
+        with tf.control_dependencies([update_spikes_op, last_spike_age_op]):
+            return tf.cond(self.t_rest > 0.0,
+                           self.resting_op,
+                           self.integrating_op)
+```
+## Stimulate neuron with predefined synapse input
+
+We replicate the $figure\,3$ of the original paper by stimulating a LIF neuron with six consecutive synapse spikes (dotted gray lines on the figure).
+
+The neuron has a refractory period of $1\,ms$ and a threshold of $1$.
+
+![LIF Neuron response](/images/posts/masquelier_1.png)
+
+As in the original paper. we see that because of the leaky nature of the neuron, the stimulating spikes have to be nearly synchronous
+for the threshold to be reached.
+
+
