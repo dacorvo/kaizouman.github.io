@@ -15,7 +15,7 @@ type: post
 ---
 Spiking neural networks([SNN](https://en.wikipedia.org/wiki/Spiking_neural_network)) are the 3rd generation of neural networks.
 
-SNN do not react on each stimulus, but rather accumulate inputs until they reach a threshold potential called a 'spike'.
+SNN do not react on each stimulus, but rather accumulate inputs until they reach a threshold potential and generate a 'spike'.
 
 Because of their very nature, SNNs cannot be trained like 2nd generation neural networks using gradient descent.
 
@@ -130,4 +130,21 @@ The neuron has a refractory period of $1\,ms$ and a threshold of $1$.
 As in the original paper. we see that because of the leaky nature of the neuron, the stimulating spikes have to be nearly synchronous
 for the threshold to be reached.
 
+## Generate Poisson spike trains with varying rate
 
+The original paper uses Poisson spike trains with a rate varying in the $[0, 90]\,Hz$ interval, with a variation speed that itself varies in the $[-1800, 1800]\,Hz$ interval (in random uniform increments in the $[-360,360]$ interval).
+
+Optionally, we may force each synapse to spike at least every $\Delta_{max}\,ms$.
+
+Please refer to my 
+[jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/master/snn/STDP_masquelier_2008.ipynb) for the details of the Spike
+trains generator.
+
+We test our spike trains generator and draw the corresponding spikes.
+Both sets of spike trains use varying rates in the $[0, 90]\,Hz$ interval.
+The second set imposes $\Delta_{max}=50\,ms$.
+
+![LIF Neuron response](/images/posts/masquelier_2.png)
+![LIF Neuron response](/images/posts/masquelier_2_1.png)
+
+We note the increased mean rate of the second set of spike trains, due to the minimum $20\,Hz$ rate we impose (ie the maximum interval we allow between two spikes is $50\,ms$).
