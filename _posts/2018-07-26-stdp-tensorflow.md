@@ -161,3 +161,78 @@ We draw the neuron membrane response to the $500$ random synaptic spike trains.
 ![LIF Neuron response](/images/posts/masquelier_3_1.png)
 
 We can see that the neuron mostly saturates and continuously generates spikes.
+
+## Introduce Spike Timing Dependent Plasticity
+
+We extend the LIFNeuron by allowing it to modify its synapse weights using a Spike Timing Dependent Plasticity algorithm (**STDP**).
+
+The **STDP** algorithm rewards synapses where spikes occurred immediately before a neuron spike, and inflicts penalties to the synapses where spikes occur after the neuron spike.
+
+The 'rewards' are called Long Term synaptic Potentiation (**LTP**), and the penalties Long Term synaptic Depression (**LTD**).
+
+For each synapse that spiked $\Delta{t}$ before a neuron spike:
+
+$$\Delta{w} = a^{+}exp(-\frac{\Delta{t}}{\tau^{+}})$$
+
+For each synapse that spikes $\Delta{t}$ after a neuron spike:
+
+$$\Delta{w} = -a^{-}exp(-\frac{\Delta{t}}{\tau^{-}})$$
+
+As in the original paper, we only apply **LTP**, resp. **LTD** to the first spike before, resp. after a neuron spike on each synapse.
+
+The code for the **STDP** graph operations are described below (please refer to my 
+[jupyter notebook](https://github.com/kaizouman/tensorsandbox/blob/master/snn/STDP_masquelier_2008.ipynb) for details:
+
+```python
+    # Long Term synaptic Potentiation
+    def LTP_op(self):
+        
+        # We only consider the last spike of each synapse from our memory
+        last_spikes_op = tf.reduce_min(self.t_spikes, axis=0)
+
+        # Reward all last synapse spikes that happened after the previous neutron spike
+        rewards_op = tf.where(last_spikes_op < self.last_spike,
+                              tf.constant(self.a_plus, shape=[self.n_syn]) * tf.exp(tf.negative(last_spikes_op/self.tau_plus)),
+                              tf.constant(0.0, shape=[self.n_syn]))
+        
+        # Evaluate new weights
+        new_w_op = tf.add(self.w, rewards_op)
+        
+        # Update with new weights clamped to [0,1]
+        return self.w.assign(tf.clip_by_value(new_w_op, 0.0, 1.0))
+    
+    # Long Term synaptic Depression
+    def LTD_op(self):
+
+        # Inflict penalties on new spikes on synapses that have not spiked
+        # The penalty is equal for all new spikes, and inversely exponential
+        # to the time since the last spike
+        penalties_op = tf.where(tf.logical_and(self.new_spikes, tf.logical_not(self.syn_has_spiked)),
+                                tf.constant(self.a_minus, shape=[self.n_syn]) * tf.exp(tf.negative(self.last_spike/self.tau_minus)),
+                                tf.constant(0.0, shape=[self.n_syn]))
+        
+        # Evaluate new weights
+        new_w_op = tf.subtract(self.w, penalties_op)
+        
+        # Update the list of synapses that have spiked
+        new_spikes_op = self.syn_has_spiked.assign(self.syn_has_spiked | self.new_spikes)
+        
+        with tf.control_dependencies([new_spikes_op]):
+            # Update with new weights clamped to [0,1]
+            return self.w.assign(tf.clip_by_value(new_w_op, 0.0, 1.0))
+```
+
+## Test STDP with predefined input
+
+We apply the same predefined spike train to an **STDP** capable LIFNeuron with a limited number of synapses, and draw the resulting rewards (*green*) and penalties (*red*).
+
+![LIF Neuron response](/images/posts/masquelier_4.png)
+![LIF Neuron response](/images/posts/masquelier_4_1.png)
+
+On the graph above, we verify that the rewards (*green* dots) are assigned only when the neuron spikes, and that they are assigned to synapses where a spike occured before the neuron spike (big *blue* dots).
+
+Note: a reward is assigned event if the synapse spike is not synchronous with the neuron spike, but it will be lower.
+
+We also verify that a penaly (*red* dot) is inflicted on every synapse where a first spike occurs after a neuron spike.
+
+Note: these penalties may later be counter-balanced by a reward if a neuron spike closely follows.
