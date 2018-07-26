@@ -260,4 +260,67 @@ Using the **STDP** values of the original paper, only the exact mean frequency o
 
 As a conclusion, either our implementations differ, or the adverse effect of this particular **STDP** algorithm has been overlooked in the original paper, because as we will see later, the actual mean stimulation rate will be around $64$ $Hz$.
 
+## Generate recurrent spike trains
+
+We don't follow exactly the same procedure as in the original paper, as the evolution of the hardware and software allows us to generate spike trains more easily. The result, however, is equivalent.
+
+We generate $2000$ spike trains, from which we force the $1000$ first to repeat a $50\,ms$ pattern at random intervals.
+
+The time to the next pattern is chosen with a probability of $0.25$ among the next slices of $50\,ms$ (omitting the first one to avoid consecutive patterns).
+
+We display the resulting synapse mean spiking rates, and some samples of the spike trains, identifying the pattern (*gray* areas).
+
+![Synapses Mean firing rate](/images/posts/masquelier_6.png)
+![Spike trains with pattern 1](/images/posts/masquelier_6_1.png)
+![Spike trains with pattern 2](/images/posts/masquelier_6_2.png)
+![Spike trains with pattern 3](/images/posts/masquelier_6_3.png)
+
+We verify that the mean spiking rate is the same for both population of synapses (approximately $64\,Hz = 54\,Hz + 10\,Hz$).
+
+We nevertheless notice that the standard deviation is much higher for the synapses involved in the pattern. 
+
+On the spike trains samples, one can visually recognize the patterns thanks to the *gray* background, but otherwise
+they would go unnoticed for the human eye.
+
+We also verify that each pattern is slightly modified by the $10\,Hz$ spontaneous activity.
+
+## Stimulate an STDP LIF neuron with recurrent spiking trains
+
+We perform a simulation on our **STDP** LIF neuron with the generated spike trains, and draw the neuron response at the 
+begining, middle and end of the simulation.
+
+On each sample, we identify the pattern interval with a *gray* background.
+
+![STDP training 1](/images/posts/masquelier_7.png)
+![STDP training 2](/images/posts/masquelier_7_1.png)
+![STDP training 3](/images/posts/masquelier_7_2.png)
+![STDP training 4](/images/posts/masquelier_7_3.png)
+
+At the beginning of the stimulation, the neuron spikes continuously, inside and outside the pattern.
+
+At the middle of the stimulation, the neuron fires mostly inside the pattern and sometimes outside the pattern (false positive).
+
+At the end of the stimulation, the neuron fires only inside the pattern.
+
+>**Important note:**
+>With the rates specified in the original paper, the neuron quickly saturates and doesn't learn anything.
+>With a tweaked LTD factor $a^{-}$, that seems to be dependent of the spike trains, the neuron learns the pattern after only a few seconds of presentation: Hurray !
+>For a given set of spike trains, you might adjust the rate to achieve a successful training 
+
+The neuron has become more an more selective as the pattern presentation were repeated, up to the point where the synapses involved in the pattern have dominant weights, as displayed on the graph below.
+
+![Weights after training](/images/posts/masquelier_8.png)
+
+## Discussion
+
+We managed to reproduce the experiments described in [Masquelier & Thorpe (2008)](https://www.semanticscholar.org/paper/Spike-Timing-Dependent-Plasticity-Finds-the-Start-Masquelier-Guyonneau/432b5bfa6fc260289fef45544a43ebcd8892915e) using [Tensorflow](https://www.tensorflow.org/).
+
+However, we found out that the **STDP** parameters needed to be tweaked to adjust to the input spike train mean rate,
+and possibly also to adjust to the generated spike trains themselves, as for a given rate, the neuron did not react
+identically for different sets of spike trains.
+
+Also, we found out that the neuron doesn't necessarily identify the beginning of the pattern, but sometime its end.
+
+These differences with the original paper raise questions about the differences between our implementation and the original one done in Matlab.
+
 
