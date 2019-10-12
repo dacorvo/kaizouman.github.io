@@ -1,8 +1,0 @@
-ExpiresActive On
-
-ExpiresDefault "access plus 5 seconds"
-
-<FilesMatch "nocache.php">
-	Header set Cache-control "no-cache"
-</FilesMatch>
-
