@@ -8,3 +8,5 @@ paginate: 4
 exclude: ["lib", "blog.rb", "Capfile", "config", "log", "Rakefile", "tmp"]
 gems: [jekyll-paginate]
 description: "Technology blog about Web development and Open Source"
+plugins:
+  - jekyll.tag-cloud
