@@ -24,58 +24,6 @@ layout: null
 		<changefreq>weekly</changefreq>
 		<priority>0.4</priority>
     </url>
-    <!-- Demos -->
-    <url>
-        <loc>http://www.kaizou.org/demos/</loc>
-		<changefreq>weekly</changefreq>
-		<priority>0.6</priority>
-    </url>
-    <url>
-        <loc>http://www.kaizou.org/demos/video-text-track-demo/</loc>
-		<changefreq>monthly</changefreq>
-		<priority>0.2</priority>
-    </url>
-    <url>
-        <loc>http://www.kaizou.org/demos/video-effects-demo/</loc>
-		<changefreq>monthly</changefreq>
-		<priority>0.2</priority>
-    </url>
-    <url>
-        <loc>http://www.kaizou.org/demos/css3-bouncing-balls-demo/</loc>
-		<changefreq>monthly</changefreq>
-		<priority>0.2</priority>
-    </url>
-    <url>
-        <loc>http://www.kaizou.org/demos/3d-carousel-demo/</loc>
-		<changefreq>monthly</changefreq>
-		<priority>0.2</priority>
-    </url>
-    <url>
-        <loc>http://www.kaizou.org/demos/3d-video-carousel-demo/</loc>
-		<changefreq>monthly</changefreq>
-		<priority>0.2</priority>
-    </url>
-    <url>
-        <loc>http://www.kaizou.org/demos/360-video-demo/</loc>
-		<changefreq>monthly</changefreq>
-		<priority>0.2</priority>
-    </url>
-    <!-- Tools -->
-    <url>
-        <loc>http://www.kaizou.org/tools/</loc>
-		<changefreq>weekly</changefreq>
-		<priority>0.6</priority>
-    </url>
-    <url>
-        <loc>http://www.kaizou.org/tools/webkit-who/</loc>
-		<changefreq>monthly</changefreq>
-		<priority>0.2</priority>
-    </url>
-    <url>
-        <loc>http://www.kaizou.org/tools/kaizoumark/</loc>
-		<changefreq>monthly</changefreq>
-		<priority>0.2</priority>
-    </url>
     <!-- posts -->
 {% for page in site.posts %}
     <url>
