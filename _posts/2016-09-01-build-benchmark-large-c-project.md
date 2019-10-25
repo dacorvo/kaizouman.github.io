@@ -12,6 +12,7 @@ tags:
 - kbuild
 - cmake
 type: post
+redirect_from: /2016/09/build-benchmark-large-c-project/
 ---
 
 The performance of build systems has been discussed at large in the developer community, with a strong emphasis made on the limitations of the legacy Make tool when dealing with large/complex projects.

@@ -11,6 +11,7 @@ tags:
 - buildroot
 type: post
 published: true
+redirect_from: /2013/11/buildroot-custom-packages/
 ---
 
 Many embedded devices run customized Linux systems that include a more or less wide range of features on top of a standard kernel delegating proprietary hardware handling to a minimal set of specific drivers.

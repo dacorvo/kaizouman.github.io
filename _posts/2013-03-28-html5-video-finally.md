@@ -4,7 +4,8 @@ title: 'HTML5 Video, finally'
 author: 'David Corvoysier'
 categories: TV
 tags: HTML5 video EME DRM
-published: true
+published: true:
+redirect_from: /2013/03/html5-video-finally/
 ---
 It's been quite a while since HTML5 video was introduced, and Adobe and Microsoft have stopped promoting Flash and Silverlight since early 2011, but it is only since a few days that the first HTML5 based commercial video service has been [launched](http://www.webpronews.com/samsung-chromebook-gets-html5-netflix-streaming-2013-03).
 

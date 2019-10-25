@@ -5,6 +5,7 @@ author: 'David Corvoysier'
 categories: TV
 tags: HTML5 video
 published: true
+redirect_from: /2013/03/guidelines-for-implementing-web-tv/
 ---
 
 The HTML5 specification has reached a level of maturity that allows TV

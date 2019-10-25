@@ -9,6 +9,7 @@ tags:
 - qemu
 - bridge
 type: post
+redirect_from: /2018/06/qemu-bridge/
 ---
 QEmu is not only useful to test code for another platform on your host, it also allows launching guest system images.
 

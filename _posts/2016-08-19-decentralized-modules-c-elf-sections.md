@@ -9,6 +9,7 @@ tags:
 - ELF
 - sections
 type: post
+redirect_from: /2016/08/decentralized-modules-c-elf-sections/
 ---
 
 In modular programming, a standard practice is to define common interfaces allowing the same type of operation to be performed on a set of otherwise independent modules.

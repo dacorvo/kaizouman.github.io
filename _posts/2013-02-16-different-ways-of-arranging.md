@@ -9,6 +9,7 @@ tags:
 status: publish
 type: post
 published: true
+redirect_from: /2013/02/different-ways-of-arranging/
 ---
 <nav markdown="1" class='toc'>
 <h1>Table of Contents</h1>

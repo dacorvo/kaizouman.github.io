@@ -5,6 +5,7 @@ categories:
 - Web Development
 tags: Custom Event Javascript
 published: true
+redirect_from: /2010/03/generating-custom-javascript-events/
 ---
 HTML 5 introduces many new exciting features, and it is very tempting 
 for the web developer to start buiding pages taking advantage of this 

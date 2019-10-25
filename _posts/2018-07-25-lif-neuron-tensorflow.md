@@ -12,6 +12,7 @@ tags:
 - snn
 - lif
 type: post
+redirect_from: /2018/07/lif-neuron-tensorflow/
 ---
 Spiking Neural Networks (SNN) are the next generation of neural networks, that operate using spikes, 
 which are discrete events that take place at points in time, rather than continuous values.

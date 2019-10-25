@@ -5,6 +5,7 @@ author: 'David Corvoysier'
 categories: Video
 tags: HTML5 video
 published: true
+redirect_from: /2013/02/html5-media-state-machine-explained/
 ---
 
 The HTML5 specification gives a detailed description of the

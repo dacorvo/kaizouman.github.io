@@ -5,6 +5,7 @@ categories:
 - Web Development
 tags: Animation Carousel CSS3 3D
 published: true
+redirect_from: /2011/08/pure-css-3d-carousel/
 ---
 CSS 3D transformations are a wonderful tool to add very impressive animation effects to your web pages without requiring a massive amount of javascript and/or WebGL code.
 

@@ -11,6 +11,7 @@ tags:
 - spiking neural nets
 - snn
 type: post
+redirect_from: /2018/07/simulating-spiking-neurons-with-tensorflow/
 ---
 Spiking Neural Networks are the next generation of machine learning, according to the litterature.
 
