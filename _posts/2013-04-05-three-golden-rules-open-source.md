@@ -8,6 +8,7 @@ tags:
 - Open Source
 type: post
 published: true
+redirect_from: /2013/04/three-golden-rules-open-source/
 ---
 Due to the increasing complexity of computer systems, you cannot develop a product from scratch anymore (well, actually you could, but it would take so much time that it would not be worth the benefits you may get from it). So either you have a huge legacy codebase that you can rely on (and your name is Microsoft), or you have to build something on top of Open Source software.
 

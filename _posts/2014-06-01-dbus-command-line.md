@@ -8,6 +8,7 @@ categories:
 tags:
 - DBus
 type: post
+redirect_from: /2014/06/dbus-command-line/
 ---
 One of the cool feature of [D-Bus](http://www.freedesktop.org/wiki/Software/dbus/), the Linux desktop application bus, is that it supports introspection.
 

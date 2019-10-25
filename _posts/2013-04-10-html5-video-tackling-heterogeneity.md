@@ -7,6 +7,7 @@ categories:
 - Web Development
 tags: HTML5 video heterogeneity
 published: true
+redirect_from: /2013/04/html5-video-tackling-heterogeneity/
 ---
 The HTML5 Media Elements specification has reached a level of maturity 
 that would allow video to be delivered in a Web browser with the same 

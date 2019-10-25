@@ -12,6 +12,7 @@ tags:
 - qemu
 - busybox
 type: post
+redirect_from: /2016/09/boot-minimal-linux-qemu/
 ---
 
 When you want to build a Linux system for an embedded target these days, it is very unlikely that you decide to do it from scratch.

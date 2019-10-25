@@ -11,6 +11,7 @@ tags:
 - schroot
 type: post
 published: true
+redirect_from: /2014/02/cross-compile-chroot/
 ---
 
 It is generally a good practice to cross-compile in an isolated environment to avoid plaguing your host system with unneccessary tooling and dependencies, or worse corrupting it.

@@ -6,6 +6,7 @@ categories:
 - Web Development
 tags: HTML5 video subtitles chapters webvtt
 published: true
+redirect_from: /2013/03/subtitles-and-chaptering-using-text-tracks/
 ---
 The HTML5 Media Elements primarily support audio and video, but media presentation can be enhanced using text tracks containing individual pieces of metadata distributed along the media timeline.
 

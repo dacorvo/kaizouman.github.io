@@ -8,6 +8,7 @@ categories:
 tags:
 - docker
 type: post
+redirect_from: /2018/07/docker-dev-environment/
 ---
 Using docker containers to meet specific application requirements is now common place: 
 instead of having to install many packages on your host, possibly conflicting with already

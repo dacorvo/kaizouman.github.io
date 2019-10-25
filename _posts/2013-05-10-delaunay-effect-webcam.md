@@ -12,6 +12,7 @@ tags:
 - Canvas
 type: post
 published: true
+redirect_from: /2013/05/delaunay-effect-webcam/
 ---
 I already detailed in a [previous post](/2012/09/frame-by-frame-video-effects-using-html5-and/) how typical image processing algorithms could be applied in real-time on a video stream using the HTML5 <code>canvas</code> to produce video effects.
  
