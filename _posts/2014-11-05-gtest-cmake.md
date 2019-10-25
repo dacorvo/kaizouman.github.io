@@ -9,6 +9,7 @@ tags:
 - CMake
 - GoogleTest
 type: post
+redirect_from: /2014/11/gtest-cmake/
 ---
 Continuous integration requires a robust test environment to be able to detect regressions as early as possible.
 

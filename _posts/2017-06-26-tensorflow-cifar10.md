@@ -10,6 +10,7 @@ tags:
 - CIFAR10
 - CNN
 type: post
+redirect_from: /2017/06/tensorflow-cifar10/
 ---
 
 The reason I started using Tensorflow was because of the limitations of my

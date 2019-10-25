@@ -9,6 +9,7 @@ tags:
 - gcc
 - ld
 type: post
+redirect_from: /2015/01/linux-libraries/
 ---
 A few months ago I stumbled upon a linking problem with secondary dependencies I couldn't solved without [__overlinking__](https://wiki.mageia.org/en/Overlinking_issues_in_packaging) the corresponding libraries.
 

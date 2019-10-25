@@ -8,6 +8,7 @@ categories:
 tags:
 - CMake
 type: post
+redirect_from: /2014/11/typical-cmake-project/
 ---
 
 When it comes to choosing a make system on Linux, you basically only have two options: autotools or CMake. I have always found Autotools a bit counter-intuitive, but was reluctant to make the effort to switch to CMake because I was worried the learning curve would be too steep for a task you don't have to perform that much often (I mean, you usually spend more time writing code than writing build rules).

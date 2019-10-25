@@ -9,6 +9,7 @@ tags:
 - DBus
 - Remote
 type: post
+redirect_from: /2014/06/remote-dbus/
 ---
 [D-Bus](http://www.freedesktop.org/wiki/Software/dbus/) is the application Bus used on Linux desktop, and is sometimes used on other devices running Linux due to the lack of good alternatives (Android is a good example of D-Bus being adopted by chance).
 
