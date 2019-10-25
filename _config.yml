@@ -6,7 +6,9 @@ highlighter: rouge
 permalink: /:year/:month/:title.html
 paginate: 4
 exclude: ["lib", "blog.rb", "Capfile", "config", "log", "Rakefile", "tmp"]
-gems: [jekyll-paginate]
+gems:
+  - jekyll-paginate
+  - jekyll-redirect-from
 description: "Technology blog about Web development and Open Source"
 plugins:
   - jekyll.tag-cloud
