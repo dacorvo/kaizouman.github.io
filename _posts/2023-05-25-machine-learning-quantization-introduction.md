@@ -25,6 +25,8 @@ exponent:
 
 $x = mantissa . 2^{exponent}$
 
+<!--more-->
+
 The 32-bit floating point representation if the most common, as it allows to represent 
 numbers in a range that is sufficient for most operations. The `float32` mantissa is composed of 
 24-bit (including sign), and the exponent is 8-bit.
