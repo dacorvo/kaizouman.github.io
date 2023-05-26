@@ -11,8 +11,6 @@ type: post
 redirect_from: /2023/05/ml-quantization-introduction/
 ---
 
-## Benefits of quantization for Machine-Learning models
-
 Even before the development of Large Language Models (LLM), the increasing 
 memory and computing requirements of Deep Neural Networks (DNN) has been a concern.
 
@@ -176,6 +174,9 @@ Also, there are two important restrictions with respect to the inputs quantizati
 - additions between the integer mantissa of inputs can only be performed if they are in the same scale,
 - operations that combine the integer mantissa of inputs channels can only be performed if the channels are in the same scale,\
 i.e if the inputs are quantized per-tensor.
+
+>Note: in [another post](/2023/05/quantization-scales-alignment.html) I explain how it is possible to add two inputs quantized with different scales
+by adding an explicit alignment operation beforehand.
 
 From an implementation perspective, operations accepting linearly quantized inputs are very specific to each device. 
 
