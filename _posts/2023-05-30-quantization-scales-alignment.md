@@ -2,7 +2,7 @@
 layout: post
 title: 'Aligning quantization scales before incompatible operations'
 author: 'David Corvoysier'
-date: '2023-05-26 12:00:00'
+date: '2023-05-30 12:00:00'
 categories:
 - Machine Learning
 tags:
@@ -50,67 +50,9 @@ On devices supporting only integer arithmetics this is a serious issue.
 
 In the next paragraphs I will detail a method to align inputs using only integer operations.
 
-## Fixed-point representation
-
-Before the introduction of the floating point representation, decimal values were expressed using a fixed-point representation.
-
-This representation also uses a mantissa and an exponent, but the latter is implicit: it defines the number of bits in the mantissa
-dedicated to the fractional part of the number.
-
-The minimum non-zero value that can be represented for a given number of fractional bits is $2^{-fracbits}$.
-
-For instance, with three fractional bits, the smallest float number than can be represented is $2^{-3} = 0.125$.
-
-Below is an example of an unsigned 8-bit fixed-point number with 4 fractional bits.
-
-```
-|   0   1   0   1   1   1   1    0   |
-|   integer bits  | fractional bits  |
-|   3   2   1   0 |-1  -2  -3   -4   |
-```
-
-The value of that number is: $2^{2} + 2^{0} + 2^{-1} + 2^{-2} + 2^{-3} = 5.875$
-
-The precision of the representation is directly related to the number of fractional bits.
-
-Below are some more examples of PI represented with unsigned 8-bit fixed-point numbers different fractional bits:
-
-| float    | frac_bits | mantissa |  binary  |
-|----------|-----------|----------|----------|
-| 3.140625 | 6         | 201      | 11001001 |
-| 3.15625  | 5         | 101      | 01100101 |
-| 3.125    | 4         | 50       | 00110010 |
-| 3.125    | 3         | 25       | 00011001 |
-| 3.25     | 2         | 13       | 00001100 |
-| 3.0      | 1         | 6        | 00000110 |
-
-The reason why the fixed-point representation comes to mind when it comes to quantization is that it has exactly the same
-restrictions regarding the addition of numbers: they must be expressed using the same amount of fractional bits.
-
-What is really interesting here is that the alignment of fixed-point numbers is trivial: it can just be performed
-using a left bitshift.
-
-Example:
-
-The following fixed-point (values, fractional bits) pairs represent the following float values:
-
-$a: fixed-point(84, 3) = 84 * 2^{-3} = 10.5​$
-
-$b: fixed-point(113, 4) = 113 * 2^{-4} = 7.0625$
-
-​
-Before summing a and b, we need to shift $a$ to the left to align it with $b$:
-
-$s = a + b = 84 << 1 + 113 = 168 + 113 = 281$
-
-The sum is a fixed-point number with 4 fractional bits:
-
-$s: fixed-point(281, 4) = 281 * 2^{-4} = 17.5625​$
-
->Note: if you remove the bits corresponding to the exponent in a float number you obtain a fixed-point with a number of fractional
-bits corresponding to the exponent.
-
 ## Explicitly apply input scale using fixed-point arithmetics
+
+In a previous post, I introduced the [fixed-point representation](/2023/05/quantization-fixed-point) and explained how it relates to quantization.
 
 Going back to our problem, we see immediately that if the scales of the inputs were power-of-two's, then the inputs
 could be interpreted as fixed-point numbers, and it would become trivial to align them.
@@ -127,52 +69,11 @@ Our goal here is to obtain a fixed-point representation of $x$.
 The thing is: fixed-point arithmetic operations produce fixed-point numbers, and the first term is already an 8-bit integer,
 i.e. a fixed-point with zero fractional bits, so all we have to do is to make sure the scale is a fixed-point number.
 
-Technically, we could directly take the float mantissa, but it is 24-bit, with a high risk of overflows in the downstream
-fixed-point operations.
-
 Since the inputs are quantized to 8-bit anyway, an 8-bit mantissa is enough to accurately represent a `float32` scale, so
-we only need to keep the 8-bit most significant bits of the mantissa, which effectively means quantizing the float to 8-bit
-with the power-of-two scale that minimizes the precision loss.
+we only need to keep the 8-bit most significant bits of the scale mantissa.
 
-This can be achieved in several ways depending on the level of abstraction you are comfortable with: below is an algorithm
-relying only on high-level mathematical operations.
-
-```python
-def to_fixed_point(x, bitwidth, signed=True):
-    """Convert a number to a FixedPoint representation
-
-    The representation is composed of a mantissa and an implicit exponent expressed as
-    a number of fractional bits, so that:
-
-    x ~= mantissa . 2 ** -frac_bits
-
-    The mantissa is an integer whose bitwidth and signedness are specified as parameters.
-
-    Args:
-        x: the source number or array
-
-
-    """
-    if not isinstance(x, np.ndarray):
-        x = np.array(x)
-    # Evaluate the number of bits available for the mantissa
-    mantissa_bits = bitwidth - 1 if signed else bitwidth
-    # Evaluate the number of bits required to represent the whole part of x
-    # as the power of two enclosing the absolute value of x
-    # Note that it can be negative if x < 0.5
-    whole_bits = np.ceil(np.log2(np.abs(x))).astype(np.int32)
-    # Deduce the number of bits required for the fractional part of x
-    # Note that it can be negative if the whole part exceeds the mantissa
-    frac_bits = mantissa_bits - whole_bits
-    # Evaluate the 'scale', which is the smallest value that can be represented (as 1)
-    scale = 2. ** -frac_bits
-    # Evaluate the minimum and maximum values for the mantissa
-    mantissa_min = -2 ** mantissa_bits if signed else 0
-    mantissa_max = 2 ** mantissa_bits - 1
-    # Evaluate the mantissa by quantizing x with the scale, clipping to the min and max
-    mantissa = np.clip(np.round(x / scale), mantissa_min, mantissa_max).astype(np.int32)
-    return mantissa, frac_bits
-```
+You can refer to this [fixed-point conversion algorithm](/2023/05/quantization-fixed-point) for an example of how we can
+convert the scale to a fixed-point representation.
 
 Now that we have a fixed-point representation of the scale as:
 
@@ -187,8 +88,7 @@ number, but it should not be an issue since the resulting mantissa needs to be c
  performed, and thus using an intermediate buffer with a larger bitwidth.
  
 >Note: If that is an issue, then it could still be reduced using a right bitshift whose magnitude would be evaluated using the
-calibration information. I will explain in more details how the bitwidth of the activations can be controlled using only integer
-arithmetic in another post.
+calibration information.
 
 ## Align inputs explicitly after converting them to fixed-point
 
