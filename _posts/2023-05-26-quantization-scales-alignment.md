@@ -26,51 +26,69 @@ $a$ and $b$ integer mantissa can only be added if $scale_a == scale_b$, allowing
 
 $a + b = (n - zeropoint_a + m - zeropoint_b) * scale_a$
 
-Intuitively, this is equivalent to say that you cannot add bytes to kilobytes without converting one number representation to the other.
+Intuitively, this is analog to say that you cannot add two quantities expressed in different units (like bytes and kilobytes) without converting one
+number representation to the other.
 
 <!--more-->
 
-Second, the same kind of restriction can be extended to operations that combine the channels of the inputs, such as the Matrix Multiplication or the
+The same kind of restriction can also be extended to operations that combine the channels of the inputs, such as the Matrix Multiplication or the
 Convolution.
 
-For such operations, the channels must be all in the same scale: in other words, the inputs of these operations mut be quantized per-tensor.
+For such operations, the channels must be all in the same scale: in other words, the inputs of these operations must be quantized per-tensor.
 
-The first restriction is a major issue for all Machine Learning models but the sequential ones. In other words it is a major issue for all models
+The first restriction is a major issue for all Machine Learning models that are not purely sequential. In other words it is a major issue for all models
 of the 2020's, as they all include parallel branches that are eventually merged with an addition layer.
 
-The second restriction used to be rather harmless: most models used to have very homogeneous activation, most of the time allowing a lossless
-quantization to 8-bit per-tensor.
+The second restriction used to be rather harmless: most models used to have very homogeneous activations, allowing a lossless quantization to 8-bit per-tensor.
 
 This changed with the introduction of Transformer models, whose activation ranges can vary with a factor from 1 to 100 between channels, making
 per-tensor quantization less efficient.
 
-In the next paragraphs I will detail a method to solve the first issue using only integer operations.
+On devices that support float arithmetics, not being able to use directly the integer mantissa is hardly a problem, except maybe for efficiency.
+
+On devices supporting only integer arithmetics this is a serious issue.
+
+In the next paragraphs I will detail a method to align inputs using only integer operations.
 
 ## Fixed-point representation
 
 Before the introduction of the floating point representation, decimal values were expressed using a fixed-point representation.
 
-In a nuthshell, a fixed-point representation is composed of a mantissa and an implicit exponent.
-
-The implicit exponent defines the number of bits dedicated to the fractional part of the number in the mantissa.
+This representation also uses a mantissa and an exponent, but the latter is implicit: it defines the number of bits in the mantissa
+dedicated to the fractional part of the number.
 
 The minimum non-zero value that can be represented for a given number of fractional bits is $2^{-fracbits}$.
 
 For instance, with three fractional bits, the smallest float number than can be represented is $2^{-3} = 0.125$.
 
-Below are some examples of numbers represented with different fractional bits:
+Below is an example of an unsigned 8-bit fixed-point number with 4 fractional bits.
 
-| float | frac_bits | integer | binary |
-|-------|-----------|---------|--------|
-| 3.625 | 3         | 29      | 11101  |
-| 3.5   | 2         | 14      | 1110   |
-| 3.5   | 1         | 7       | 111    |
+```
+|   0   1   0   1   1   1   1    0   |
+|   integer bits  | fractional bits  |
+|   3   2   1   0 |-1  -2  -3   -4   |
+```
+
+The value of that number is: $2^{2} + 2^{0} + 2^{-1} + 2^{-2} + 2^{-3} = 5.875$
+
+The precision of the representation is directly related to the number of fractional bits.
+
+Below are some more examples of PI represented with unsigned 8-bit fixed-point numbers different fractional bits:
+
+| float    | frac_bits | mantissa |  binary  |
+|----------|-----------|----------|----------|
+| 3.140625 | 6         | 201      | 11001001 |
+| 3.15625  | 5         | 101      | 01100101 |
+| 3.125    | 4         | 50       | 00110010 |
+| 3.125    | 3         | 25       | 00011001 |
+| 3.25     | 2         | 13       | 00001100 |
+| 3.0      | 1         | 6        | 00000110 |
 
 The reason why the fixed-point representation comes to mind when it comes to quantization is that it has exactly the same
-restrictions regarding the addition of numbers: they must have the exact same number of fractional bits.
+restrictions regarding the addition of numbers: they must be expressed using the same amount of fractional bits.
 
-The reason why it is really interesting here is because the alignment of fixed-point numbers is trivial: it can just be performed
-using a bitshift.
+What is really interesting here is that the alignment of fixed-point numbers is trivial: it can just be performed
+using a left bitshift.
 
 Example:
 
@@ -164,6 +182,14 @@ We can derive an approximated fixed-point representation of $x$:
 
 $x \approx ((n - zeropoint) * i_s). 2^{-fracbits_s}$
 
+Due to the multiplication of the two integers, this representation has a higher bitwidth than the original quantized
+number, but it should not be an issue since the resulting mantissa needs to be calculated only when the operation is
+ performed, and thus using an intermediate buffer with a larger bitwidth.
+ 
+>Note: If that is an issue, then it could still be reduced using a right bitshift whose magnitude would be evaluated using the
+calibration information. I will explain in more details how the bitwidth of the activations can be controlled using only integer
+arithmetic in another post.
+
 ## Align inputs explicitly after converting them to fixed-point
 
 Using the fixed-point scales obtained as specified in the previous paragraph, it is now possible to align
@@ -208,8 +234,8 @@ This additional scale needs to be taken into account when quantizing the outputs
 Mathematically, this means that the scale of the outputs obtained after calibration must be multiplied
 by $2^{-maxfracbits}$.
 
->Note: In another post, I will explain how this can be further simplified if the output quantization scale is
- also represented as a fixed-point number.
+>Note: as mentioned in a previous note, I will explain in another post how this can be achieved using integer arithmetics
+only.
 
 ## Generalization to per-axis inputs
 
