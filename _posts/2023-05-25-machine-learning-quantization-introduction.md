@@ -274,6 +274,3 @@ This reveals that we can directly quantize the integer outputs of the operation 
 
 >Note: Depending on the capabilities of the device, this chain of operations can be implemented in very
 different ways on devices that do not have efficient implementations of the integer Matrix Multiplication.
-
-In a upcoming article I will explain how it is possible to add two inputs quantized with different scales
-by adding an explicit alignment operation beforehand.
