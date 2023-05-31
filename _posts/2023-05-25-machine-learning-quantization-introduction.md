@@ -21,7 +21,7 @@ From an implementation perspective, the operations are performed on floating poi
 numbers, which are a digital representation of decimal numbers composed of a mantissa and an 
 exponent:
 
-$x = mantissa . 2^{exponent}$
+$$x = mantissa . 2^{exponent}$$
 
 <!--more-->
 
@@ -59,7 +59,7 @@ The representation of a linearly quantized number is composed of:
 - a float scale,
 - an integer zero-point.
 
-$x = (mantissa - zeropoint).scale$
+$$x = (mantissa - zeropoint).scale$$
 
 The scale is used to project back the integer numbers into a float representation.
 
@@ -105,7 +105,7 @@ paragraph.
 
 For a target bit width of n for the mantissa, one evaluates the scale as:
 
-$scale = \frac{Max - Min}{2^n - 1}$
+$$scale = \frac{Max - Min}{2^n - 1}$$
 
 The zero-point is then deduced from the scale to make sure that $Min$ is mapped to the 
 lowest integer value and $Max$ to the highest integer value.
@@ -117,7 +117,7 @@ This leads to the following formulas for signed/unsigned representations:
 
 The quantization of a float tensor is then:
 
-$mantissa = saturate(round(\frac{x}{scale}) + zeropoint)$
+$$mantissa = saturate(round(\frac{x}{scale}) + zeropoint)$$
 
 Again, the saturation depends of the signed of the target representation:
 - unsigned: $[0, 2n - 1]$,
@@ -134,7 +134,20 @@ tensors for the mantissa, scale and zeropoint.
 
 Since weights can contain positive and negative values, they are typically quantized into `int8`.
 
-W(`float32`) -> I(`int8`), scale(`float32`), zeropoint(`uint8`)
+<pre class='diagram'>
+             .----------.
+             |  Weights |
+             |  float32 |
+             | constant |
+             +----+-----+
+            /     |      \
+           v      v       v
+.----------. .----------. .------------.
+|  Weights | |  scale   | | zero-point |
+|   int8   | | float32  | |    int8    |
+| constant | | constant | |  constant  |
+'----------' '----------' '------------'
+</pre>
 
 The dynamic activations on the other hand need to be quantized on-the-fly by inserting the quantization
 operations in the graph:
@@ -153,7 +166,20 @@ explicit calibration, since the exact range of their outputs is known in advance
 
 After calibration, each activation float variable is mapped to an integer variable and two static tensors.
 
-A(`float32`) -> I(`int8`/`uint8`), scale(`float32`), zeropoint(`uint8`)
+<pre class='diagram'>
+               .-----------.
+              | Activations |
+              |   float32   |
+              |  variable   |
+              /'-----+-----'\
+             /       |       \
+            v        v        v
+ .-----------.  .----------. .------------.
+| Activations | |  scale   | | zero-point |
+|   (u)int8   | | float32  | |  (u)int8   |
+|  variable   | | constant | |  constant  |
+ '-----------'  '----------' '------------'
+</pre>
 
 >Note: the activations can be quantized into either `int8` or `uint8`. It is simpler to quantize them to `uint8`
 if they correspond to the output of a ReLU operation, since zero-point will be in that case 0.
@@ -161,6 +187,47 @@ if they correspond to the output of a ReLU operation, since zero-point will be i
 Conceptually, the resulting graph is a clone of the original graph where all compatible operations are:
 - replaced by a version that operates on tuples of (inputs, scale, zero-point),
 - followed by a quantization operation of its outputs.
+
+<pre class='diagram'>
+              .---------.                   .--------.  .----------. .------------.
+             |  Inputs   |                 |  Inputs  | |  scale   | | zero-point |
+             |  float32  |                 |  (u)int8 | | float32  | |  (u)int8   |
+             | variable  |                 | variable | | constant | |  constant  |
+              '----+----'                   '----+---'  '-----+----' '------+-----'
+                   |             .               '------------+-------------'
+.----------.       v             |\      .----------.         |
+| Weights  |   .------.       +--' \     | Weights  |         |
+| float32  +->| Matmul |      +--. /     |  int8    +-.       |
+| constant |   '---+--'          |/      | constant | |       |
+'----------'       |             '       '----------' |       |
+                   v                                  |       |
+              .---------.                .----------. |       v
+             |  Outputs  |               |  scale   | |   .------.
+             |  float32  |               | float32  +-+->| MatMul |
+             |  variable |               | constant | |   '---+--'
+              '---------'                '----------' |       |
+                                                      |       |
+                                         .----------. |       |
+                                         |zero-point| |       |          .------------.
+                                         |  int8    +-'       |          |   scale    |
+                                         | constant |         |        .-+  float32   |
+                                         '----------'         v        | |  constant  |
+                                                          .--------.   | '------------'
+                                                         | Quantize |<-+
+                                                          '---+----'   | .------------.
+                                                              |        | | zero-point |
+                                                              |        '-+  (u)int8   |
+                                                              |          |  constant  |
+                                                              |          '------------'
+                                                              v
+                                                          .--------.
+                                                         | Outputs  |
+                                                         |  (u)int8 |
+                                                         | variable |
+                                                          '--------'
+</pre>
+
+
 
 ## Quantized linear operations
 
