@@ -25,11 +25,14 @@ This is therefore my own tutorial to CMake, based on my primary requirement: jus
 
 The project structure is partly driven by the project design, but it would ususally contain at least two common sub-directories, along with several "module" sub-directories:
 
-    main
-    test
-    moduleA
-    moduleB
-    ...
+<pre class='diagram'>
+project
+.
++-. main
++-. test
++-. moduleA
++-. moduleB
+</pre>
 
 The `main` subdirectory contains the main project target, typically an executable.
 
