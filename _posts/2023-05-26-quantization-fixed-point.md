@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'A brief introduction to fixed-point representation'
+title: 'Fixed-point representation for quantization'
 author: 'David Corvoysier'
 date: '2023-05-26 12:00:00'
 categories:
@@ -40,13 +40,17 @@ For instance, with three fractional bits, the smallest float number than can be 
 
 Below is an example of an unsigned 8-bit fixed-point number with 4 fractional bits.
 
-```
-|   0   1   0   1   1   1   1    0   |
-|   integer bits  | fractional bits  |
-|   3   2   1   0 |-1  -2  -3   -4   |
-```
+<pre class='diagram'>
+.------------------------------------.  
+|  0   1   0   1 |  1   1   1    0   |
+.------------------------------------.  
+|  integer bits  |  fractional bits  |
+.------------------------------------.  
+|  3   2   1   0 | -1  -2  -3   -4   |
+'------------------------------------'  
+</pre>
 
-The value of that number is: $2^{2} + 2^{0} + 2^{-1} + 2^{-2} + 2^{-3} = 5.875$
+The decimal value of that number is: $2^{2} + 2^{0} + 2^{-1} + 2^{-2} + 2^{-3} = 5.875$
 
 The precision of the representation is directly related to the number of fractional bits.
 
@@ -61,11 +65,12 @@ Below are some more examples of PI represented with unsigned 8-bit fixed-point n
 | 3.25     | 2         | 13       | 00001100 |
 | 3.0      | 1         | 6        | 00000110 |
 
+
 ## Obtaining a fixed-point representation of a float
 
 As a reminder, a float number is represented as:
 
-$x = mantissa * 2^{exponent}$
+$$x = mantissa * 2^{exponent}$$
 
 Our goal here is to obtain a fixed-point representation of $x$.
 
@@ -81,6 +86,8 @@ This can be achieved in several ways depending on the level of abstraction you a
 relying only on high-level mathematical operations.
 
 ```python
+
+
 def to_fixed_point(x, bitwidth, signed=True):
     """Convert a number to a FixedPoint representation
 
@@ -115,11 +122,14 @@ def to_fixed_point(x, bitwidth, signed=True):
     # Evaluate the mantissa by quantizing x with the scale, clipping to the min and max
     mantissa = np.clip(np.round(x / scale), mantissa_min, mantissa_max).astype(np.int32)
     return mantissa, frac_bits
+
+
 ```
 
 The algorithm above produces a fixed-point representation of $x$ such that:
 
-$x_{float} \approx x_{int} . 2^{-x_{fracbits}}$
+$$x_{float} \approx x_{int} . 2^{-x_{fracbits}}$$
+
 
 ## Fixed-point addition (or subtraction)
 
@@ -137,9 +147,9 @@ Example:
 
 The following fixed-point (values, fractional bits) pairs represent the following float values:
 
-$a: fixed-point(84, 3) = 84 * 2^{-3} = 10.5​$
+$a: (84, 3) = 84 * 2^{-3} = 10.5​$
 
-$b: fixed-point(113, 4) = 113 * 2^{-4} = 7.0625$
+$b: (113, 4) = 113 * 2^{-4} = 7.0625$
 
 ​
 Before summing a and b, we need to shift $a$ to the left to align it with $b$:
@@ -148,7 +158,8 @@ $s = a + b = 84 << 1 + 113 = 168 + 113 = 281$
 
 The sum is a fixed-point number with 4 fractional bits:
 
-$s: fixed-point(281, 4) = 281 * 2^{-4} = 17.5625​$
+$s: (281, 4) = 281 * 2^{-4} = 17.5625​$
+
 
 ## Fixed-point multiplication
 
@@ -160,13 +171,14 @@ Example:
 
 Going back to our two numbers:
 
-$a: fixed-point(84, 3) = 84 * 2^{-3} = 10.5​$
+$a: (84, 3) = 84 * 2^{-3} = 10.5​$
 
-$b: fixed-point(113, 4) = 113 * 2^{-4} = 7.0625$
+$b: (113, 4) = 113 * 2^{-4} = 7.0625$
 
 Their fixed-point product is:
 
 $p = a.b = (84 . 113, 3 + 4) = (9492, 7) = 74.15625$
+
 
 ## Fixed-point downscale
 
@@ -188,7 +200,8 @@ Note that the right-shift operation always perform a floor, which may lead to a 
 
 For that reason, it is often implemented as a 'rounded' right-shift by adding $2^{n-1}$ before shifting of $n$.
 
->Note: this is mathematically equivalent to adding $0.5$ to \frac${x}{2^{n}} before taking its floor.
+>Note: this is mathematically equivalent to adding $0.5$ to $\frac${x}{2^{n}}$ before taking its floor.
+
 
 ## Fixed-point division
 
@@ -200,9 +213,9 @@ Example:
 
 Going back to our two numbers:
 
-$a: fixed-point(84, 3) = 84 * 2^{-3} = 10.5​$
+$a: (84, 3) = 84 * 2^{-3} = 10.5​$
 
-$b: fixed-point(113, 4) = 113 * 2^{-4} = 7.0625$
+$b: (113, 4) = 113 * 2^{-4} = 7.0625$
 
 Their fixed-point division is:
 
@@ -210,6 +223,6 @@ $p = \frac{b}{a} = (\frac{113}{84}, 4 - 3) = (1, 1) = 0.5$
 
 A possible mitigation is to left-shift the dividend before the division to increase its precision: the resulting quotient will in turn have an increased precision.
 
-$b: fixed-point(113, 4) << 3 = (113 << 3, 4 + 3) = (904, 7) = 904 * 2^{-7} = 7.0625$
+$b: (113, 4) << 3 = (113 << 3, 4 + 3) = (904, 7) = 904 * 2^{-7} = 7.0625$
 
 $p = \frac{b}{a} = (\frac{904}{84}, 7 - 3) = (10, 4) = 0.625$
