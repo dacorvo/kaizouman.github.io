@@ -15,20 +15,11 @@ if (code) {
     link.rel = 'stylesheet';
     link.media = 'screen';
     link['data-noprefix'] = true;
-    link.href = '/code/3rdparty/google-code-prettify/prettify.css';
-    document.head.appendChild(link);
-    link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.media = 'screen';
-    link['data-noprefix'] = true;
-    link.href = '/code/3rdparty/google-code-prettify/sunburst.css';
+    link.href = 'https://raw.githubusercontent.com/googlearchive/code-prettify/master/styles/sunburst.css';
     document.head.appendChild(link);
     var script = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = '/code/3rdparty/google-code-prettify/prettify.js';
-    script.onload= function () {
-      prettyPrint();
-    }
+    script.src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js";
     document.head.appendChild(script);
 }
 })();
