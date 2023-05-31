@@ -256,6 +256,15 @@ article blockquote {
 	border-left: 4px solid #ddd;
 }
 
+article table :is(td, th) {
+    border: 1px solid black;
+    padding: 0.3em;
+}
+
+article tr:nth-child(even) {
+    background-color: #ebecf0;
+}
+
 /* Posts */
 
 ol#posts {
