@@ -75,15 +75,19 @@ integer and a float to represent each number.
 ## Applicability of quantization to Machine-Learning
 
 When quantizing Machine-Learning models, one can take advantage of the fact that
-the training produces weights and activations that stay within reasonably stable ranges
+the training produces weights and activations stay within reasonably stable ranges
 for a given operation.
 
-This comes partly from the initialization, partly from the constraints applied
-on the weights (like regularization), and partly because of the explicit normalization
-operations inserted in the graph (like the BatchNorm).
+This comes from several empirical techniques used to improve convergence:
+- weights initialization[^qinit],
+- weights and/or activation regularization[^qreg],
+- explicit normalization layers[^qbn].
 
 This means that the weights and activations tensors for a specific operation can be represented
 using the same scale and zero-point, thus leading to a very compact representation.
+
+>Note: this is why quantization is often categorized as a form of compression, although unlike most
+compression techniques, it produces numbers that can be directly used for arithmetic operations.
 
 There are various subtypes of quantization.
 
@@ -244,7 +248,7 @@ This does not mean however that one can just replace all floating point operatio
 
 Also, there are two important restrictions with respect to the inputs quantization:
 - additions between the integer mantissa of inputs can only be performed if they are in the same scale,
-- operations that combine the integer mantissa of inputs channels can only be performed if the channels are in the same scale,\
+- operations that combine the integer mantissa of inputs channels can only be performed if the channels are in the same scale,
 i.e if the inputs are quantized per-tensor.
 
 >Note: in [another post](/2023/05/quantization-scales-alignment.html) I explain how it is possible to add two inputs quantized with different scales
@@ -275,7 +279,31 @@ We can also approximate the outputs per-axis, assuming that the next operation d
 
 $Y \approx Y_s * (Y_q - Y_{zp})$, with $Y_s(K)$, $Y_q(I, K)$, $Y_{zp}(K)$
 
-And the quantized graph equivalent to the float operation would be to:
+The operation is summarized on the graph below (note that the intermediate integer output Y_q can be implicit):
+
+<pre class='diagram'>
+    .-----.  .-----. .------.
+   |  X_q  | | X_s | | X_zp |
+    '--+--'  '--+--' '--+---'
+       '--------+-------'
+.-----.         |
+| W_q +-.       |
+'-----' |       |          .-----.
+        |       v        .-+ Y_s |
+.-----. |  .---------.   | '-----'
+| W_s +-+->| QMatMul |<--+
+'-----' |  '----+----'   | .-----.
+        |       |        '-+ Y_zp|
+.-----. |       |          '-----'
+|W_zp +-'       |(Y_q)
+'-----'         |
+                v
+               .-.
+              | Y |
+               '-'
+</pre>
+
+Going through the graph step by step:
 
 - evaluate the matrix multiplication of the quantized inputs to produce float outputs
 
@@ -341,11 +369,61 @@ $Y_q = saturate(round(\frac{X_s * W_s}{Y_s} * O_q) + Y_{zp})$
 
 $Y \approx Y_s * (Yq - Y_{zp})$
 
-This reveals that we can directly quantize the integer outputs of the operation with a scale equal
- to $\frac{Y_s}{X_s * W_s}$.
+This reveals that we can directly 'downscale' the integer outputs of the operation with a folded scale
+  $F_s = \frac{Y_s}{X_s * W_s}$.
 
->Note: Depending on the capabilities of the device, this chain of operations can be implemented in very
-different ways on devices that do not have efficient implementations of the integer Matrix Multiplication.
+The downscaling operation can be implemented as a float division and a round.
+
+>Note: I will detail in another post an implementation using only integer arithmetic.
+
+The simplified graph can be summarized below:
+
+<pre class='diagram'>
+        .-----.   .------. 
+       |  X_q  |  | X_zp |
+        '--+--'   '--+---'
+           '----+----'
+.-----.         |
+| W_q +-.       v
+'-----' |  .----------.
+        +->|IntMatMul |
+.-----. |  '----+-----'
+|W_zp +-'       |         .-----.   
+'-----'         v       .-+ F_s |  
+           .---------.  | '-----'   
+           |Downscale|<-+         
+           '----+----'  | .-----.      
+                v       '-+ Y_zp|     
+               .-.        '-----'
+              | Y |
+               '-'
+</pre>
+
+This can be further simplified by removing the zero-points if we assume a symmetric quantization.
+
+<pre class='diagram'>
+           .-----.  
+          |  X_q  | 
+           '--+--'  
+              |
+              v 
+.-----.  .----------.
+| W_q +->|IntMatMul |
+'-----'  '----+-----'
+              |             
+              v          
+         .---------.  .-----.   
+         |Downscale|<-+ Y_s |         
+         '----+----'  '-----'  
+              v          
+             .-.        
+            | Y |
+             '-'
+</pre>
+
+
+>Note: the quantized matrix multiplication can be implemented in very different ways on devices that do not have efficient
+implementations of the integer Matrix Multiplication.
 
 ## References
 
@@ -355,3 +433,11 @@ different ways on devices that do not have efficient implementations of the inte
 [^qtf]: Benoit Jacob, Skirmantas Kligys, Bo Chen, Menglong Zhu, Matthew Tang, Andrew Howard, Hartwig Adam, Dmitry Kalenichenko,
         "Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference"
         [arxiv](https://arxiv.org/abs/1712.05877), 2017.
+
+[^qinit]: Stone Yun, Alexander Wong, "Where Should We Begin? A Low-Level Exploration of Weight Initialization Impact on Quantized Behaviour of Deep Neural Networks",
+          [arxiv](https://arxiv.org/abs/2011.14578), 2020.
+
+[^qreg]: Arash Ahmadian, Saurabh Dash, Hongyu Chen, Bharat Venkitesh, Stephen Gou, Phil Blunsom, Ahmet Üstün, Sara Hooker, "Intriguing Properties of Quantization at Scale",
+         [arxiv](https://arxiv.org/abs/2305.19268), 2023.
+
+[^qbn]: Elaina Teresa Chai, "Analysis of quantization and normalization effects in deep neural networks", [stanford](https://searchworks.stanford.edu/view/13971425), 2021.
